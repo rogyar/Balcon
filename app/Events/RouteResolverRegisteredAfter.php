@@ -4,10 +4,22 @@ namespace App\Events;
 
 class RouteResolverRegisteredAfter extends Event
 {
-    public $app;
+    /** @var  \App\Core\Balcon */
+    protected $balcon;
 
-    public function __construct($app)
+    /**
+     * @param \App\Core\Balcon $balcon
+     */
+    public function __construct($balcon)
     {
-        $this->app = $app;
+        $this->app = $balcon;
+    }
+
+    /**
+     * @return \App\Core\Balcon
+     */
+    public function getContext()
+    {
+        return $this->balcon;
     }
 }

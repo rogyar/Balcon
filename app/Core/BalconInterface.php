@@ -4,8 +4,12 @@ namespace App\Core;
 
 interface BalconInterface
 {
+    /**
+     * @return \App\Resolvers\RouteResolverInterface
+     */
     function getRouteResolver();
-    function setRouteResolver($routeResolver);
+
+    function setRouteResolver(\App\Resolvers\RouteResolverInterface $routeResolver);
     function getEntityResolver();
     function setEntityResolver($entityResolver);
     function getEntity();

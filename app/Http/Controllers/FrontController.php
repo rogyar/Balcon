@@ -18,25 +18,30 @@ class FrontController extends Controller
     public function frontRouter($page = '', $subpage = '')
     {
         $app = app();
-        $app->bind('RouteResolver', function($app) {
-            return new RouteResolver($app);
-        });
+        /** @var \App\Core\Balcon $balcon */
+        $balcon = $app->make('Balcon');
 
-        // Event: route resolver register after
-        event(new RouteResolverRegisteredAfter($app));
+        // Event: route resolver register before
+
+        // Assign an implementation of the Router Resolver
+        $app->bind(
+            '\App\Resolvers\RouteResolverInterface',
+            $balcon->getExtensionsContainer()->getResolverImplementation('RouteResolver')
+        );
+
+        event(new RouteResolverRegisteredAfter($balcon));
 
         // Call Route Resolver
-        $app->make('Balcon')->getRouteResolver()->detectEntityType($page.$subpage);
+        $balcon->getRouteResolver()->detectEntityType($page.$subpage);
 
         // Call Entity Resolver
-        $test = $app->make('Balcon')->getEntityResolver()->process();
+        $test = $balcon->getEntityResolver()->process();
 
         // Call Response resolver
 
         // Event: Response sent before
 
         // Send response
-
 
         return $test;
     }

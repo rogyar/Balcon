@@ -4,12 +4,17 @@ namespace App\Resolvers;
 
 class RouteResolver implements RouteResolverInterface
 {
-    protected $app;
+    /** @var  \App\Core\Balcon */
+    protected $balcon;
 
-    public function __construct($app)
+    /**
+     * @param \App\Core\Balcon $balcon
+     */
+    public function __construct($balcon)
     {
-        $this->app = $app;
+        $this->balcon = $balcon;
     }
+
     public function detectEntityType($route)
     {
         // Detect entity type
@@ -18,10 +23,17 @@ class RouteResolver implements RouteResolverInterface
 
     public function registerEntityResolver()
     {
-        $app = $this->app;
-        $app->bind('EntityResolver', function($app) {
-            return new EntityResolver($app);
-        });
+        //$app = $this->balcon;
+        // FIXME: do not bind anything, put a new implementation instead
+
+        //$app->bind('EntityResolver', function($app) {
+        //    return new EntityResolver($app);
+        //});
+
+        $this->balcon->getExtensionsContainer()->setResolverImplementation([
+            'resolver' => 'resolver name',
+            'class' => 'class reference'
+        ]);
 
         // Event: entity resolver register after
     }

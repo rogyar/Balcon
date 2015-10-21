@@ -23,13 +23,13 @@ class EventServiceProvider extends ServiceProvider
     public function boot(DispatcherContract $events)
     {
         /* Here will be a routine that collects all event observers from core and
-        3rd party plugins and binds to the observers using the following way: */
+        3rd party plugins and binds to the observers using the following way:
+        UPDATE: get listeners list from Balcon service
+        */
+        /** @var \App\Core\Balcon $balcon */
+        $balcon = $this->app->make('Balcon');
 
-        $this->listen = [
-            'App\Events\RouteResolverRegisteredAfter' => [
-                'App\Listeners\RouteResolverRegister'
-            ],
-        ];
+        $this->listen = $balcon->getExtensionsContainer()->getEventListeners();
 
         parent::boot($events);
 
