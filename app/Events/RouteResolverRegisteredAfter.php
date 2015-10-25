@@ -12,7 +12,7 @@ class RouteResolverRegisteredAfter extends Event
      */
     public function __construct($balcon)
     {
-        $this->$balcon = $balcon;
+        $this->balcon = $balcon;
     }
 
     /**
