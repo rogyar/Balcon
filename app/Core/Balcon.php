@@ -2,6 +2,8 @@
 
 namespace App\Core;
 
+use App\Resolvers\RouteResolverFactory;
+
 class Balcon implements BalconInterface
 {
     /** @var  \Illuminate\Foundation\Application */
@@ -25,10 +27,6 @@ class Balcon implements BalconInterface
     public function getRouteResolver()
     {
         if (!$this->routeResolver) {
-            /* FIXME: instantiate a new class and inject '\App\Resolvers\RouteResolverInterface' there
-               Supposed that we already have an implementation assigned to the interface
-            */
-
             $this->routeResolver = $this->app->make('\App\Resolvers\RouteResolverInterface');
         }
         return $this->routeResolver;
@@ -39,10 +37,13 @@ class Balcon implements BalconInterface
         $this->routeResolver = $routeResolver;
     }
 
+    /**
+     * @inheritdoc
+     */
     public function getEntityResolver()
     {
         if (!$this->entityResolver) {
-            $this->entityResolver = $this->app->make('EntityResolver');
+            $this->entityResolver = $this->app->make('\App\Resolvers\EntityResolverInterface');
         }
         return $this->entityResolver;
     }

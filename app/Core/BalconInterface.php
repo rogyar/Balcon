@@ -10,7 +10,12 @@ interface BalconInterface
     function getRouteResolver();
 
     function setRouteResolver(\App\Resolvers\RouteResolverInterface $routeResolver);
+
+    /**
+     * @return \App\Resolvers\EntityResolverInterface
+     */
     function getEntityResolver();
+
     function setEntityResolver($entityResolver);
     function getEntity();
     function setEntity($entity);

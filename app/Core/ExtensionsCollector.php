@@ -25,7 +25,7 @@ class ExtensionsCollector
     /**
      * Returns array with extensions names, registered in the system
      *
-     * @return []
+     * @return array
      */
     public function getExtensionsList()
     {
@@ -39,7 +39,7 @@ class ExtensionsCollector
     /**
      * Returns array with event listeners, registered in the system
      *
-     * @return []
+     * @return array
      */
     public function getEventListeners()
     {
@@ -49,24 +49,29 @@ class ExtensionsCollector
         return $this->eventListeners;
     }
 
+    /**
+     * Returns a registered implementation class name for the requested resolver
+     *
+     * @param $resolverName
+     * @return string
+     */
     public function getResolverImplementation($resolverName)
     {
         $resolverImplementation = '';
         if (in_array($resolverName, array_keys($this->resolversImplementations))) {
-            $resolverImplementation = isset($this->resolversImplementations[$resolverName]) ?: '';
+            $resolverImplementation = isset($this->resolversImplementations[$resolverName]) ?
+                $this->resolversImplementations[$resolverName] : '';
 
             // If there's no implementation registered - maybe it's time to collect the implementations
-
             if (empty($resolverImplementation)) {
                 $resolverImplementation = $this->collectResolversImplementations()[$resolverName];
             }
+        }
 
-            // If the implementation is still empty that's really bad
-
-            if (empty($resolverImplementation)) {
-                // FIXME: maybe try to register a default implementation
-                throw new Exception("An implementation for resolver '$resolverName' is missing in the system");
-            }
+        // If the implementation is still empty that's really bad
+        if (empty($resolverImplementation)) {
+            // FIXME: maybe try to register a default implementation
+            throw new Exception("An implementation for resolver '$resolverName' is missing in the system");
         }
 
         return $resolverImplementation;
@@ -80,11 +85,12 @@ class ExtensionsCollector
     /**
      * Checks the system for the registered extensions and return a list of the extensions names
      *
-     * @return []
+     * @return array
      */
     protected function collectExtensionsList()
     {
         //TODO
+        $this->extensionsList = [];
 
         return $this->extensionsList;
     }
@@ -92,7 +98,7 @@ class ExtensionsCollector
     /**
      * Checks all extensions for the registered event listeners and returns a list of listeners
      *
-     * @return []
+     * @return array
      */
     protected function collectEventListeners()
     {
@@ -106,6 +112,8 @@ class ExtensionsCollector
             ],
         ];
         */
+
+        $this->eventListeners = [];
 
         foreach ($this->getExtensionsList() as $extension) {
 
@@ -126,6 +134,7 @@ class ExtensionsCollector
         foreach ($this->getExtensionsList() as $extension) {
 
         }
+
         return $this->resolversImplementations;
     }
 }

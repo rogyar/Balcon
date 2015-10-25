@@ -25,7 +25,7 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         $app = $this->app;
-        $app->singleton('Balcon', function($app) {
+        $app->singleton('\App\Core\BalconInterface', function($app) {
             return new Balcon($app);
         });
     }

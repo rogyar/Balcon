@@ -2,13 +2,18 @@
 
 namespace App\Resolvers;
 
+use \App\Core\BalconInterface;
+
 class EntityResolver implements EntityResolverInterface
 {
-    protected $app;
+    /**
+     * @var BalconInterface
+     */
+    protected $balcon;
 
-    public function __construct($app)
+    public function __construct(BalconInterface $balcon)
     {
-        $this->app = $app;
+        $this->balcon = $balcon;
     }
 
     public function process()

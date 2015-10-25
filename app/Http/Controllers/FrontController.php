@@ -19,9 +19,15 @@ class FrontController extends Controller
     {
         $app = app();
         /** @var \App\Core\Balcon $balcon */
-        $balcon = $app->make('Balcon');
+        $balcon = $app->make('\App\Core\BalconInterface');
 
         // Event: route resolver register before
+
+        // FIXME: temporary implementation registation. Should be done inside of an extension
+        $balcon->getExtensionsContainer()->setResolverImplementation([
+            'resolver' => 'RouteResolver',
+            'class'    => '\App\Resolvers\RouteResolver'
+        ]);
 
         // Assign an implementation of the Router Resolver
         $app->bind(
@@ -33,6 +39,19 @@ class FrontController extends Controller
 
         // Call Route Resolver
         $balcon->getRouteResolver()->detectEntityType($page.$subpage);
+
+
+        // FIXME: temporary implementation registation. Should be done inside of an extension
+        $balcon->getExtensionsContainer()->setResolverImplementation([
+            'resolver' => 'EntityResolver',
+            'class'    => '\App\Resolvers\EntityResolver'
+        ]);
+
+        // Assign an implementation of the Entity Resolver
+        $app->bind(
+            '\App\Resolvers\EntityResolverInterface',
+            $balcon->getExtensionsContainer()->getResolverImplementation('EntityResolver')
+        );
 
         // Call Entity Resolver
         $test = $balcon->getEntityResolver()->process();

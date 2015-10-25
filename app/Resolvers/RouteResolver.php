@@ -2,15 +2,17 @@
 
 namespace App\Resolvers;
 
+use \App\Core\BalconInterface;
+
 class RouteResolver implements RouteResolverInterface
 {
-    /** @var  \App\Core\Balcon */
+    /** @var  BalconInterface */
     protected $balcon;
 
     /**
-     * @param \App\Core\Balcon $balcon
+     * @param BalconInterface $balcon
      */
-    public function __construct($balcon)
+    public function __construct(BalconInterface $balcon)
     {
         $this->balcon = $balcon;
     }

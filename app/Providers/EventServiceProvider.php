@@ -27,7 +27,7 @@ class EventServiceProvider extends ServiceProvider
         UPDATE: get listeners list from Balcon service
         */
         /** @var \App\Core\Balcon $balcon */
-        $balcon = $this->app->make('Balcon');
+        $balcon = $this->app->make('\App\Core\BalconInterface');
 
         $this->listen = $balcon->getExtensionsContainer()->getEventListeners();
 
