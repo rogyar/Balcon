@@ -129,7 +129,7 @@ class ExtensionsCollector
      */
     protected function collectResolversImplementations()
     {
-        // TODO
+        // FIXME: resolvers will not be collected. Will be injected via events observers instead
 
         foreach ($this->getExtensionsList() as $extension) {
 
