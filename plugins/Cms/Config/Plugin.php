@@ -10,7 +10,7 @@ class Plugin implements PluginInterface
      */
     public function getName()
     {
-        return '';
+        return 'Cms';
     }
 
     /**
@@ -18,7 +18,7 @@ class Plugin implements PluginInterface
      */
     public function getDescription()
     {
-        return '';
+        return 'Balcon core Content Management extension';
     }
 
     /**
@@ -26,6 +26,16 @@ class Plugin implements PluginInterface
      */
     public function getEvents()
     {
-        return [];
+        return [
+            'App\Events\RouteResolverRegisterBefore' => [
+                'Plugins\Cms\Listeners\RouteResolverRegisterBeforeHandler'
+            ],
+            'App\Events\RouteResolverRegisterAfter' => [
+                'Plugins\Cms\Listeners\RouteResolverRegisterAfterHandler'
+            ],
+            'App\Events\EntityResolverRegisterBefore' => [
+                'Plugins\Cms\Listeners\EntityResolverRegisterBeforeHandler'
+            ]
+        ];
     }
 }

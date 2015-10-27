@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Resolvers;
+namespace Plugins\Cms\Resolvers;
 
-use \App\Core\BalconInterface;
+use App\Core\BalconInterface;
+use App\Resolvers\EntityResolverInterface;
 
 class EntityResolver implements EntityResolverInterface
 {

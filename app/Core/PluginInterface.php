@@ -23,7 +23,7 @@ interface PluginInterface
      * Returns list of the plugin events observers. Format should be the following:
      *  [
      *    'App\Events\Event' => [
-     *      'SomePlugin\Listeners\SomeEventResolver'
+     *      'Plugins\SomePlugin\Listeners\SomeEventResolver'
      *    ],
      *  ]
      *
