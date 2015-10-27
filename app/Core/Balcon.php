@@ -55,16 +55,21 @@ class Balcon implements BalconInterface
 
     public function getEntity()
     {
+        // FIXME: move to entityResolver
         return $this->entity;
     }
 
     public function setEntity($entity)
     {
+        // FIXME: move to entityResolver
         $this->entity = $entity;
     }
 
     public function getResponseResolver()
     {
+        if (!$this->responseResolver) {
+            $this->responseResolver = $this->app->make('\App\Resolvers\ResponseResolverInterface');
+        }
         return $this->responseResolver;
     }
 
@@ -75,11 +80,13 @@ class Balcon implements BalconInterface
 
     public function getResponse()
     {
+        // FIXME: move to responseResolver
         return $this->response;
     }
 
     public function setResponse($response)
     {
+        // FIXME: move to responseResolver
         $this->response = $response;
     }
 

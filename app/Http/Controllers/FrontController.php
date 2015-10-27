@@ -7,6 +7,8 @@ use App\User;
 use App\Http\Controllers\Controller;
 use App\Events\RouteResolverRegisterAfter;
 use App\Events\EntityResolverRegisterBefore;
+use App\Events\ResponseResolverRegisterBefore;
+use App\Events\ResponseResolverRegisterAfter;
 use Event;
 
 class FrontController extends Controller
@@ -44,14 +46,20 @@ class FrontController extends Controller
         );
 
         // Call Entity Resolver
-        $test = $balcon->getEntityResolver()->process();
+        $balcon->getEntityResolver()->process();
 
-        // Call Response resolver
+        event(new ResponseResolverRegisterBefore($balcon));
 
-        // Event: Response sent before
+        $app->bind('\App\Resolvers\ResponseResolverInterface',
+            $balcon->getExtensionsContainer()->getResolverImplementation('ResponseResolver')
+        );
 
-        // Send response
+        event(new ResponseResolverRegisterAfter($balcon));
 
-        return $test;
+        $balcon->getResponseResolver()->process();
+
+        // todo: event response send before
+
+        return $balcon->getResponseResolver()->sendResponse();
     }
 }

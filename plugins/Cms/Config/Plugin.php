@@ -35,6 +35,9 @@ class Plugin implements PluginInterface
             ],
             'App\Events\EntityResolverRegisterBefore' => [
                 'Plugins\Cms\Listeners\EntityResolverRegisterBeforeHandler'
+            ],
+            'App\Events\ResponseResolverRegisterBefore' => [
+                'Plugins\Cms\Listeners\ResponseResolverRegisterBeforeHandler'
             ]
         ];
     }
