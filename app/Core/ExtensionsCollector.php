@@ -7,6 +7,9 @@ use Mockery\CountValidator\Exception;
 
 class ExtensionsCollector
 {
+    const PLUGINS_NAMESPACE = 'Plugins\\';
+
+    protected $pluginsDir;
     protected $extensionsList;
     protected $eventListeners;
 
@@ -30,7 +33,7 @@ class ExtensionsCollector
     public function getExtensionsList()
     {
         if (null == $this->extensionsList) {
-            $this->extensionsList = $this->collectExtensionsList();
+            $this->extensionsList = $this->collectExtensions();
         }
 
         return $this->extensionsList;
@@ -83,14 +86,55 @@ class ExtensionsCollector
     }
 
     /**
-     * Checks the system for the registered extensions and return a list of the extensions names
+     * Returns path to the plugins directory
+     *
+     * @return string
+     */
+    public function getPluginsDir()
+    {
+        if (empty($this->pluginsDir)) {
+            $appDir = dirname(dirname(__FILE__));
+            $this->pluginsDir = dirname($appDir) . '/plugins/';
+        }
+
+        return $this->pluginsDir;
+    }
+
+    /**
+     * Returns plugin's bootstrap file class from it's directory name
+     *
+     * @param string $pluginDirectoryName
+     * @return string
+     */
+    protected function getPluginBootstrapClassName($pluginDirectoryName)
+    {
+        return self::PLUGINS_NAMESPACE . $pluginDirectoryName . '\Config\Plugin';
+    }
+
+    /**
+     * Checks the system for the registered extensions and return a list
      *
      * @return array
      */
-    protected function collectExtensionsList()
+    protected function collectExtensions()
     {
-        //TODO
         $this->extensionsList = [];
+        $pluginsFolderContents = scandir($this->getPluginsDir());
+        $excludedDirectoriesNames = ['..', '.'];
+        foreach ($pluginsFolderContents as $pluginsFolderItem) {
+            if (is_dir($this->getPluginsDir() . $pluginsFolderItem) && !in_array($pluginsFolderItem, $excludedDirectoriesNames) ) {
+                $extensionBootstrapClass = $this->getPluginBootstrapClassName($pluginsFolderItem);
+                /** @var \App\Core\PluginInterface $extensionBootstrap */
+                $extensionBootstrap = new $extensionBootstrapClass;
+                $extensionName = $extensionBootstrap->getName();
+
+                /* Throw exception if an extension with the same name has been previously registered */
+                if (isset($this->extensionsList[$extensionName])) {
+                    throw new Exception("The extension with name $extensionName has been already regisered");
+                }
+                $this->extensionsList[$extensionName] = $extensionBootstrap;
+            }
+        }
 
         return $this->extensionsList;
     }
@@ -102,21 +146,14 @@ class ExtensionsCollector
      */
     protected function collectEventListeners()
     {
-        // TODO
-
-        /*
-         The listeners list should have the following structure
-        [
-            'App\Events\RouteResolverRegisteredAfter' => [
-                'App\Listeners\RouteResolverRegister'
-            ],
-        ];
-        */
-
         $this->eventListeners = [];
-
+        /** @var \App\Core\PluginInterface $extension */
         foreach ($this->getExtensionsList() as $extension) {
+            $extensionEvents = $extension->getEvents();
 
+            if (count($extensionEvents) > 0) {
+                $this->eventListeners = array_merge($this->eventListeners, $extensionEvents);
+            }
         }
 
         return $this->eventListeners;
@@ -129,7 +166,7 @@ class ExtensionsCollector
      */
     protected function collectResolversImplementations()
     {
-        // TODO
+        // FIXME: resolvers will not be collected. Will be injected via events observers instead
 
         foreach ($this->getExtensionsList() as $extension) {
 
@@ -137,4 +174,7 @@ class ExtensionsCollector
 
         return $this->resolversImplementations;
     }
+
+
+
 }

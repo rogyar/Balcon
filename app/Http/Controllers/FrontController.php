@@ -2,10 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\RouteResolverRegisterBefore;
 use App\User;
 use App\Http\Controllers\Controller;
-use App\Resolvers\RouteResolver;
-use App\Events\RouteResolverRegisteredAfter;
+use App\Events\RouteResolverRegisterAfter;
+use App\Events\EntityResolverRegisterBefore;
 use Event;
 
 class FrontController extends Controller
@@ -21,13 +22,7 @@ class FrontController extends Controller
         /** @var \App\Core\Balcon $balcon */
         $balcon = $app->make('\App\Core\BalconInterface');
 
-        // Event: route resolver register before
-
-        // FIXME: temporary implementation registation. Should be done inside of an extension
-        $balcon->getExtensionsContainer()->setResolverImplementation([
-            'resolver' => 'RouteResolver',
-            'class'    => '\App\Resolvers\RouteResolver'
-        ]);
+        event(new RouteResolverRegisterBefore($balcon));
 
         // Assign an implementation of the Router Resolver
         $app->bind(
@@ -35,17 +30,12 @@ class FrontController extends Controller
             $balcon->getExtensionsContainer()->getResolverImplementation('RouteResolver')
         );
 
-        event(new RouteResolverRegisteredAfter($balcon));
+        event(new RouteResolverRegisterAfter($balcon));
 
         // Call Route Resolver
-        $balcon->getRouteResolver()->detectEntityType($page.$subpage);
+        $balcon->getRouteResolver()->process($page.$subpage);
 
-
-        // FIXME: temporary implementation registation. Should be done inside of an extension
-        $balcon->getExtensionsContainer()->setResolverImplementation([
-            'resolver' => 'EntityResolver',
-            'class'    => '\App\Resolvers\EntityResolver'
-        ]);
+        event(new EntityResolverRegisterBefore($balcon));
 
         // Assign an implementation of the Entity Resolver
         $app->bind(

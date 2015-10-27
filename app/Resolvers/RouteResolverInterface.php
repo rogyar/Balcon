@@ -4,7 +4,9 @@ namespace App\Resolvers;
 
 interface RouteResolverInterface
 {
-    public function detectEntityType($route);
+    public function process($route);
 
-    public function registerEntityResolver();
+    public function getEntityResolver();
+
+    public function setEntityResolver($resolverClassName);
 }

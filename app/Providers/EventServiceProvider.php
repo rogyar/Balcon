@@ -26,12 +26,12 @@ class EventServiceProvider extends ServiceProvider
         3rd party plugins and binds to the observers using the following way:
         UPDATE: get listeners list from Balcon service
         */
+
         /** @var \App\Core\Balcon $balcon */
         $balcon = $this->app->make('\App\Core\BalconInterface');
 
         $this->listen = $balcon->getExtensionsContainer()->getEventListeners();
 
         parent::boot($events);
-
     }
 }
