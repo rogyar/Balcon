@@ -4,6 +4,7 @@ namespace Plugins\Cms\Resolvers;
 
 use App\Core\BalconInterface;
 use App\Resolvers\RouteResolverInterface;
+use Plugins\Cms\Model\Page;
 
 class RouteResolver implements RouteResolverInterface
 {
@@ -25,7 +26,10 @@ class RouteResolver implements RouteResolverInterface
 
     public function process($route)
     {
-        //TODO:  Detect entity type and other routines
+        $pageEntity = new Page();
+        if ($pageEntity->handleRoute($route)) {
+            $this->balcon->setEntity($pageEntity);
+        }
 
         return $this->getEntityResolver();
     }

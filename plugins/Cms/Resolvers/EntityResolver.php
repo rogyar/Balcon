@@ -4,6 +4,7 @@ namespace Plugins\Cms\Resolvers;
 
 use App\Core\BalconInterface;
 use App\Resolvers\EntityResolverInterface;
+use Plugins\Cms\Model\Page;
 
 class EntityResolver implements EntityResolverInterface
 {
@@ -12,6 +13,8 @@ class EntityResolver implements EntityResolverInterface
      */
     protected $balcon;
 
+    protected $entity;
+
     public function __construct(BalconInterface $balcon)
     {
         $this->balcon = $balcon;
@@ -19,6 +22,6 @@ class EntityResolver implements EntityResolverInterface
 
     public function process()
     {
-        return 'Test passed';
+        $this->entity = new Page();
     }
 }

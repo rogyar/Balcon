@@ -118,6 +118,7 @@ class ExtensionsCollector
      */
     protected function collectExtensions()
     {
+        // TODO: use DirectoryIterator
         $this->extensionsList = [];
         $pluginsFolderContents = scandir($this->getPluginsDir());
         $excludedDirectoriesNames = ['..', '.'];
