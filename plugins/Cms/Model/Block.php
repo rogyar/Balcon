@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\Cms\Resolvers;
+namespace Plugins\Cms\Model;
 
 
 use Mockery\CountValidator\Exception;
@@ -47,7 +47,12 @@ class Block
 
     public function setName($name)
     {
+        $this->name = $name;
+    }
 
+    public function getName()
+    {
+        return $this->name;
     }
 
     /**
@@ -92,7 +97,7 @@ class Block
     /**
      * @param mixed $parent
      */
-    public function setParent(Block $parent)
+    public function setParent(Block $parent = null)
     {
         $this->parent = $parent;
     }
@@ -134,6 +139,8 @@ class Block
      */
     public function getBody()
     {
+        // FIXME: temporary
+        $this->body = file_get_contents($this->getPath() . $this->getName() . '.md');
         return $this->body;
     }
 

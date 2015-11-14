@@ -40,9 +40,9 @@ class EntityResolver implements EntityResolverInterface
     public function process()
     {
         // TODO: observer entity_process_before pass $this (?)
-
         $routeResolver = $this->balcon->getRouteResolver();
         $page = new Page($routeResolver->getRoute());
+        $page->process();
         $this->setEntity($page);
     }
 }

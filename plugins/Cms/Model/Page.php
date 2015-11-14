@@ -6,12 +6,12 @@ namespace Plugins\Cms\Model;
 use App\Core\EntityInterface;
 use Mockery\CountValidator\Exception;
 use Plugins\Cms\Helper\Filesystem;
-use Plugins\Cms\Resolvers\Block;
+use Plugins\Cms\Model\Block;
 
 class Page implements EntityInterface
 {
     protected $route;
-    protected $blocks;
+    protected $blocksCollection;
     protected $dispatchedBlock;
     protected $isProcessed = false;
 
@@ -21,7 +21,7 @@ class Page implements EntityInterface
         $this->setRoute($route);
 
         // TODO: the pages can be loaded from cache here using filesystem factory
-        $this->blocks = $filesystem->collectPages();
+        $this->blocksCollection = $filesystem->collectPages();
     }
 
     /**
@@ -54,11 +54,11 @@ class Page implements EntityInterface
 
     public function process()
     {
-        $route = $this->getRoute();
-        if (!$route) {
+        $route = "/{$this->getRoute()}/";
+        if ($route) {
             /** @var  $block */
-            foreach ($this->blocks as $block) {
-                if ($block->getRoute == $route) {
+            foreach ($this->blocksCollection->getBlocks() as $block) {
+                if ($block->getRoute() == $route) { // TODO: check if block is routeable
                     $this->setDispatchedBlock($block);
                     $this->isProcessed = true;
                     return true;

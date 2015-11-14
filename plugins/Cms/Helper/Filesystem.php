@@ -3,8 +3,8 @@
 namespace Plugins\Cms\Helper;
 
 
-use Plugins\Cms\Resolvers\Block;
-use Plugins\Cms\Resolvers\BlocksCollection;
+use Plugins\Cms\Model\Block;
+use Plugins\Cms\Model\BlocksCollection;
 
 class Filesystem
 {
@@ -34,19 +34,22 @@ class Filesystem
             if ($fileInfo->isDot()) {
                 continue;
             }
+
             if ($fileInfo->isDir()) {
-                $this->collectBlocks($pagesCollection, null, $fileInfo->getPath());
+                $this->collectBlocks(
+                    $pagesCollection,
+                    $fileInfo->getPath() . '/' . $fileInfo->getFilename());
             }
         }
 
         return $pagesCollection;
     }
 
-    protected function collectBlocks(BlocksCollection $collection, Block $parent, $path)
+    protected function collectBlocks(BlocksCollection $collection, $path, Block $parent = null)
     {
         $pageContents = new \DirectoryIterator($path);
         $block = new Block();
-        $block->setParent($parent);
+        $block->setParent();
         $block->setChildren(new BlocksCollection());
         $block->setPath($path);
         foreach ($pageContents as $fileInfo) {
@@ -54,11 +57,16 @@ class Filesystem
                 continue;
             }
             if ($fileInfo->isDir()) {
-                $this->collectBlocks($block->getChildren(), $block, $fileInfo->getPath());
+                $this->collectBlocks(
+                    $block->getChildren(),
+                    $fileInfo->getPath()  . '/' .  $fileInfo->getFilename(),
+                    $block
+                );
             }
             if ($fileInfo->getExtension() == 'md') {
                 // TODO: check if all names will be compatible with URLs
-                $block->setName($fileInfo->getBasename());
+                $basename = substr($fileInfo->getBasename(), 0, (strlen($fileInfo->getBasename())- 3));
+                $block->setName($basename);
             }
         }
         $collection->addBlock($block);

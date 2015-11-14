@@ -13,11 +13,6 @@ use Event;
 
 class FrontController extends Controller
 {
-    /**
-     * Show the profile for the given user.
-     *
-     * @return Response
-     */
     public function frontRouter($page = '', $subpage = '')
     {
         $app = app();
@@ -33,7 +28,6 @@ class FrontController extends Controller
         );
 
         event(new RouteResolverRegisterAfter($balcon));
-
         // Call Route Resolver
         $balcon->getRouteResolver()->process($page.$subpage);
 

@@ -4,7 +4,7 @@ namespace Plugins\Cms\Processors;
 
 
 use Plugins\Cms\Model\Page;
-use Plugins\Cms\Resolvers\Block;
+use Plugins\Cms\Model\Block;
 
 class TemplatesProcessor
 {
@@ -115,10 +115,12 @@ class TemplatesProcessor
     {
         $childCollection = $block->getChildren();
 
-        /** @var Block $childBlock */
-        foreach ($childCollection->getBlocks() as $childBlock) {
-            $this->processBlockTemplate($childBlock);
-            $this->iterateChildBlocks($childBlock);
+        if ($childCollection->getBlocks()) {
+            /** @var Block $childBlock */
+            foreach ($childCollection->getBlocks() as $childBlock) {
+                $this->processBlockTemplate($childBlock);
+                $this->iterateChildBlocks($childBlock);
+            }
         }
     }
 
@@ -174,7 +176,7 @@ class TemplatesProcessor
         if (empty($this->generatedViewsDir)) {
             //TODO: get value from config
             $pluginDir = dirname(dirname(__FILE__));
-            $this->generatedViewsDir = dirname(dirname($pluginDir)) . '/var/views/';
+            $this->generatedViewsDir = dirname(dirname($pluginDir)) . '/resources/views/generated/';
         }
 
         return $this->generatedViewsDir;
@@ -183,6 +185,11 @@ class TemplatesProcessor
     public function generateResultTemplate(Block $block)
     {
         $filePath = $this->getGeneratedViewsDir() . $block->getRoute() . '.blade.php';
+        $fileDirPath = dirname($filePath);
+        // Create directory if it does not exist
+        if (!is_dir($fileDirPath)) {
+            mkdir($fileDirPath, 0755, true);
+        }
         try {
             $fileHandle = fopen($filePath, 'w+');
             fwrite($fileHandle, $this->content);

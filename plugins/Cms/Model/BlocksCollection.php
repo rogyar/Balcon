@@ -1,6 +1,6 @@
 <?php
 
-namespace Plugins\Cms\Resolvers;
+namespace Plugins\Cms\Model;
 
 
 class BlocksCollection

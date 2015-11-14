@@ -44,7 +44,6 @@ class RouteResolver implements RouteResolverInterface
     public function process($route)
     {
         $this->setRoute($route);
-
         // TODO: observer route_process_before pass $this
 
         // If the route has nod been dispatched - try to use standard route from the CMS plugin
