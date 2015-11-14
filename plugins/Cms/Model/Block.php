@@ -10,6 +10,12 @@ class Block
     protected $name;
     protected $path;
     protected $template;
+    protected $templateVariables;
+    protected $isRoutable;
+    protected $isParsed = false;
+
+    protected $body;
+
     protected $route;
 
     /** @var  Block */
@@ -90,4 +96,74 @@ class Block
     {
         $this->parent = $parent;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTemplate()
+    {
+        return $this->template;
+    }
+
+    /**
+     * @param mixed $template
+     */
+    public function setTemplate($template)
+    {
+        $this->template = $template;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsRoutable()
+    {
+        return $this->isRoutable;
+    }
+
+    /**
+     * @param mixed $isRoutable
+     */
+    public function setIsRoutable($isRoutable)
+    {
+        $this->isRoutable = $isRoutable;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBody()
+    {
+        return $this->body;
+    }
+
+    /**
+     * @param mixed $body
+     */
+    public function setBody($body)
+    {
+        $this->body = $body;
+    }
+
+    /**
+     * Return blocks body and exclude current block for
+     * further rendering. Useful for child blocks rendering
+     * inside of templates
+     *
+     * @return mixed
+     */
+    public function getBodyForInsertion()
+    {
+        $this->isParsed = true;
+        return $this->getBody();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIsParsed()
+    {
+        return $this->isParsed;
+    }
+
 }

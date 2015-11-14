@@ -5,6 +5,7 @@ namespace Plugins\Cms\Resolvers;
 use App\Core\BalconInterface;
 use App\Resolvers\EntityResolverInterface;
 use Plugins\Cms\Model\Page;
+use App\Core\EntityInterface;
 
 class EntityResolver implements EntityResolverInterface
 {
@@ -15,6 +16,22 @@ class EntityResolver implements EntityResolverInterface
 
     protected $entity;
 
+    /**
+     * @return mixed
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
+
+    /**
+     * @param mixed $entity
+     */
+    public function setEntity(EntityInterface $entity)
+    {
+        $this->entity = $entity;
+    }
+
     public function __construct(BalconInterface $balcon)
     {
         $this->balcon = $balcon;
@@ -22,6 +39,10 @@ class EntityResolver implements EntityResolverInterface
 
     public function process()
     {
-        $this->entity = new Page();
+        // TODO: observer entity_process_before pass $this (?)
+
+        $routeResolver = $this->balcon->getRouteResolver();
+        $page = new Page($routeResolver->getRoute());
+        $this->setEntity($page);
     }
 }

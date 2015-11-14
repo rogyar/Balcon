@@ -17,9 +17,10 @@ class Filesystem
      */
     public function getPagesDir()
     {
+        // TODO: get value from config
         if (empty($this->pagesDir)) {
-            $appDir = dirname(dirname(__FILE__));
-            $this->pagesDir = dirname($appDir) . '/pages/';
+            $pluginDir = dirname(dirname(__FILE__));
+            $this->pagesDir = dirname(dirname($pluginDir)) . '/pages/';
         }
 
         return $this->pagesDir;

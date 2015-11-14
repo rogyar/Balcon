@@ -4,5 +4,6 @@ namespace App\Core;
 
 interface EntityInterface
 {
-    function handleRoute($route);
+    function process();
+    function isProcessed();
 }
