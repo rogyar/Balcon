@@ -8,17 +8,67 @@ use Plugins\Cms\Model\Block;
 
 class TemplatesProcessor
 {
+    /**
+     * Directive inside of templates that is being replaced by
+     * the actual block variable
+     */
     const BLOCK_TEMPLATE_DIRECTIVE = "'%block%'";
-
+    /**
+     * Path to current themes root directory
+     * @var string
+     */
     protected $themesDir;
+    /**
+     * Path to root directory of the generated views
+     * @var string
+     */
     protected $generatedViewsDir;
+    /**
+     * Current theme name
+     * @var string
+     */
     protected $currentTheme;
+    /**
+     * Fallback theme name
+     * @var string
+     */
     protected $fallbackTheme;
+    /**
+     * Default template name
+     * @var string
+     */
     protected $defaultTemplate;
+    /**
+     * Generated raw content of the result view
+     * @var string
+     */
     protected $content;
-    protected $resultTemplateParams = [];
+    /**
+     * Parameters that will be passed to the result view
+     * @var array
+     */
+    protected $resultViewParams = [];
+    /**
+     * Result view name that is passed to the blade views processor
+     * @var string
+     */
+    protected $resultView;
 
-    protected $resultTemplate;
+    /**
+     * @return mixed
+     */
+    public function getContent()
+    {
+        return $this->content;
+    }
+
+    /**
+     * @param mixed $content
+     */
+    public function setContent($content)
+    {
+        $this->content = $content;
+    }
 
     /**
      * @return string
@@ -54,7 +104,9 @@ class TemplatesProcessor
         return $this->fallbackTheme;
     }
 
-
+    /**
+     * @return string
+     */
     public function getThemesDir()
     {
         //TODO: get value from config
@@ -65,10 +117,74 @@ class TemplatesProcessor
         return $this->themesDir;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getResultView()
+    {
+        return $this->resultView;
+    }
+
+    /**
+     * @param mixed $resultView
+     */
+    public function setResultView($resultView)
+    {
+        $this->resultView = $resultView;
+    }
+
+    /**
+     * @return array
+     */
+    public function getResultViewParams()
+    {
+        return $this->resultViewParams;
+    }
+
+    /**
+     * @return string
+     */
+    public function getGeneratedViewsDir()
+    {
+        if (empty($this->generatedViewsDir)) {
+            //TODO: get value from config
+            $pluginDir = dirname(dirname(__FILE__));
+            $this->generatedViewsDir = dirname(dirname($pluginDir)) . '/resources/views/generated/';
+        }
+
+        return $this->generatedViewsDir;
+    }
+
+    /**
+     * Applies templates for root block and child blocks
+     *
+     * @param Block $block
+     * @return mixed
+     * @throws \Exception
+     */
+    public function applyPageBlocksTemplates(Block $block)
+    {
+        $this->processBlockTemplate($block); // Process root block
+        $this->applyChildBlocksTemplates($block); // Process child blocks
+        $this->generateResultViewFile($block);
+
+        // TODO: get from config
+        $this->setResultView('generated' . $block->getRoute());
+
+        return $this->getResultView();
+    }
+
+
+    /**
+     * Inserts current block into the global content
+     *
+     * @param Block $block
+     * @throws \Exception
+     */
     public function processBlockTemplate(Block $block)
     {
-        $templateFileRawContents = $this->getThemeTemplateFileContents($block->getRoute());
-        $blockNameInTemplate = $this->addResultTemplateBlock($block);
+        $templateFileRawContents = $this->getThemeTemplateFileContents($block);
+        $blockNameInTemplate = $this->addBlockToTheResultViewParamsSet($block);
 
         // Check if the required directive present in the template file
         if (!strstr($templateFileRawContents, self::BLOCK_TEMPLATE_DIRECTIVE)) {
@@ -85,33 +201,13 @@ class TemplatesProcessor
         $this->content .= $templateFileRawContents;
     }
 
-    protected function addResultTemplateBlock(Block $block)
-    {
-        $keyCounter = count($this->resultTemplateParams);
-        $currentParamKeyName = "block_$keyCounter";
-        $this->resultTemplateParams = [$currentParamKeyName => $block];
-
-        return $currentParamKeyName;
-    }
-
-    public function applyBlocksTemplates(Block $block)
-    {
-        // Check if view for block has been already generated
-        $resultTemplateFile = $this->getGeneratedViewsDir() . $block->getRoute();
-        if (!file_exists($resultTemplateFile)) {
-            // There is no view generated for this block, generate it from scratch
-            $this->processBlockTemplate($block); // Process root block
-            $this->iterateChildBlocks($block); // Process child blocks
-            $this->generateResultTemplate($block);
-        }
-
-        // TODO: get from config
-        $this->setResultTemplate('generated/' . $block->getRoute());
-
-        return $this->getResultTemplate();
-    }
-
-    protected function iterateChildBlocks(Block $block)
+    /**
+     * Applies templates for child blocks of the provided block
+     *
+     * @param Block $block
+     * @throws \Exception
+     */
+    protected function applyChildBlocksTemplates(Block $block)
     {
         $childCollection = $block->getChildren();
 
@@ -119,21 +215,37 @@ class TemplatesProcessor
             /** @var Block $childBlock */
             foreach ($childCollection->getBlocks() as $childBlock) {
                 $this->processBlockTemplate($childBlock);
-                $this->iterateChildBlocks($childBlock);
+                $this->applyChildBlocksTemplates($childBlock);
             }
         }
     }
 
     /**
+     * Adds block to the set of parameters that will be passed to the final view
+     *
+     * @param Block $block
+     * @return string
+     */
+    protected function addBlockToTheResultViewParamsSet(Block $block)
+    {
+        $keyCounter = count($this->resultViewParams);
+        $currentParamKeyName = "block_$keyCounter";
+        $this->resultViewParams[$currentParamKeyName] = $block;
+
+        return $currentParamKeyName;
+    }
+
+    /**
      * Returns RAW contents of a template file
      *
-     * @param string $path
+     * @param Block $block
      * @return string
      * @throws \Exception
      */
-    protected function getThemeTemplateFileContents($path)
+    protected function getThemeTemplateFileContents($block)
     {
-        $templatePath = $this->getThemesDir() . $this->getCurrentTheme() . '/templates/' . $path . '.blade.php';
+        $path = $block->getTemplate() ? $block->getTemplate() : $block->getRoute();
+        $templatePath = $this->getThemesDir() . $this->getCurrentTheme() . '/templates' . $path . '.blade.php';
         if (file_exists($templatePath)) { // Check if template exists in the theme's directory
             return file_get_contents($templatePath);
         } else { // If template file does not exists - search it in the default theme
@@ -153,37 +265,15 @@ class TemplatesProcessor
     }
 
     /**
-     * @return mixed
+     * Generates file for the result view
+     *
+     * @param Block $block
+     * @return string
+     * @throws \Exception
      */
-    public function getContent()
+    protected function generateResultViewFile(Block $block)
     {
-        return $this->content;
-    }
-
-    /**
-     * @param mixed $content
-     */
-    public function setContent($content)
-    {
-        $this->content = $content;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getGeneratedViewsDir()
-    {
-        if (empty($this->generatedViewsDir)) {
-            //TODO: get value from config
-            $pluginDir = dirname(dirname(__FILE__));
-            $this->generatedViewsDir = dirname(dirname($pluginDir)) . '/resources/views/generated/';
-        }
-
-        return $this->generatedViewsDir;
-    }
-
-    public function generateResultTemplate(Block $block)
-    {
+        $this->addOutputCommandForContent();
         $filePath = $this->getGeneratedViewsDir() . $block->getRoute() . '.blade.php';
         $fileDirPath = dirname($filePath);
         // Create directory if it does not exist
@@ -194,6 +284,7 @@ class TemplatesProcessor
             $fileHandle = fopen($filePath, 'w+');
             fwrite($fileHandle, $this->content);
             fclose($fileHandle);
+
             return $filePath;
         } catch (\Exception $e) {
             throw new \Exception(
@@ -203,26 +294,13 @@ class TemplatesProcessor
     }
 
     /**
-     * @return mixed
+     * Adds output command to result view
+     * for displaying all sections
      */
-    public function getResultTemplate()
+    protected function addOutputCommandForContent()
     {
-        return $this->resultTemplate;
-    }
-
-    /**
-     * @param mixed $resultTemplate
-     */
-    public function setResultTemplate($resultTemplate)
-    {
-        $this->resultTemplate = $resultTemplate;
-    }
-
-    /**
-     * @return array
-     */
-    public function getResultTemplateParams()
-    {
-        return $this->resultTemplateParams;
+        $this->content .= '
+            @yield(\'content\')
+        ';
     }
 }

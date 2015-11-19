@@ -5,58 +5,102 @@ namespace Plugins\Cms\Model;
 
 use Mockery\CountValidator\Exception;
 
+/**
+ * Class Block
+ * @package Plugins\Cms\Model
+ *
+ * Represents a page block
+ */
 class Block
 {
-    protected $name;
+    /**
+     * Absolute path to the block's md file
+     * @var  string
+     */
     protected $path;
-    protected $template;
-    protected $templateVariables;
+    /**
+     * True if current block is accessable via URL
+     * @var  bool
+     */
     protected $isRoutable;
+    /**
+     *  True when current block has been already inserted in the content
+     * @var bool
+     */
     protected $isParsed = false;
-
-    protected $body;
-
+    /**
+     * Route for current block. Includes block's name
+     * @var string
+     */
     protected $route;
-
+    /**
+     * Collection of the child blocks
+     * @var BlocksCollection
+     */
+    protected $children;
+    /** @var  string */
+    protected $body;
     /** @var  Block */
     protected $parent;
+    /** @var  string */
+    protected $template;
+    /** @var  array */
+    protected $templateVariables;
+    /** @var  string */
+    protected $name;
 
-    /** @var  BlocksCollection */
-    protected $children;
-
-
+    /**
+     * @param BlocksCollection $collection
+     */
     public function setChildren(BlocksCollection $collection)
     {
         $this->children = $collection;
     }
 
+    /**
+     * @return BlocksCollection
+     */
     public function getChildren()
     {
         return $this->children;
     }
 
+    /**
+     * @param string $path
+     */
     public function setPath($path)
     {
         $this->path = $path;
     }
 
+    /**
+     * @return string
+     */
     public function getPath()
     {
         return $this->path;
     }
 
+    /**
+     * @param string $name
+     */
     public function setName($name)
     {
         $this->name = $name;
     }
 
+    /**
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
     /**
-     * @return mixed
+     * Generates and returns current route
+     *
+     * @return string
      */
     public function getRoute()
     {
@@ -70,7 +114,11 @@ class Block
                 if (empty($blockName)) {
                     throw new Exception("The block in {$this->getPath()} does not have .md file inside");
                 }
-                $this->route = $blockName . '/' . $this->route;
+                if ($this->route) {
+                    $this->route = $blockName . '/' . $this->route;
+                } else {
+                    $this->route = $blockName;
+                }
                 $block = $block->getParent();
             } while (true);
         }
@@ -79,7 +127,7 @@ class Block
     }
 
     /**
-     * @param mixed $route
+     * @param string $route
      */
     public function setRoute($route)
     {
@@ -87,7 +135,7 @@ class Block
     }
 
     /**
-     * @return mixed
+     * @return Block
      */
     public function getParent()
     {
@@ -95,7 +143,7 @@ class Block
     }
 
     /**
-     * @param mixed $parent
+     * @param Block $parent
      */
     public function setParent(Block $parent = null)
     {
@@ -103,7 +151,7 @@ class Block
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getTemplate()
     {
@@ -111,7 +159,7 @@ class Block
     }
 
     /**
-     * @param mixed $template
+     * @param string $template
      */
     public function setTemplate($template)
     {
@@ -119,7 +167,7 @@ class Block
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getIsRoutable()
     {
@@ -127,7 +175,7 @@ class Block
     }
 
     /**
-     * @param mixed $isRoutable
+     * @param bool $isRoutable
      */
     public function setIsRoutable($isRoutable)
     {
@@ -135,17 +183,17 @@ class Block
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getBody()
     {
-        // FIXME: temporary
-        $this->body = file_get_contents($this->getPath() . $this->getName() . '.md');
+        // FIXME: temporary solution
+        $this->body = file_get_contents($this->getPath() . '/' . $this->getName() . '.md');
         return $this->body;
     }
 
     /**
-     * @param mixed $body
+     * @param string $body
      */
     public function setBody($body)
     {
@@ -157,7 +205,7 @@ class Block
      * further rendering. Useful for child blocks rendering
      * inside of templates
      *
-     * @return mixed
+     * @return string
      */
     public function getBodyForInsertion()
     {
@@ -166,11 +214,22 @@ class Block
     }
 
     /**
-     * @return mixed
+     * @return bool
      */
     public function getIsParsed()
     {
         return $this->isParsed;
+    }
+
+    /**
+     * Returns child block by it's name
+     *
+     * @param string $name
+     * @return Block
+     */
+    public function getChild($name)
+    {
+        return $this->getChildren()->getBlock($name);
     }
 
 }

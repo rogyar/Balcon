@@ -7,17 +7,26 @@ use App\Resolvers\EntityResolverInterface;
 use Plugins\Cms\Model\Page;
 use App\Core\EntityInterface;
 
+/**
+ * Class EntityResolver
+ * @package Plugins\Cms\Resolvers
+ *
+ * Handles an entity that connected to the requested route
+ */
 class EntityResolver implements EntityResolverInterface
 {
-    /**
-     * @var BalconInterface
-     */
+    /** @var BalconInterface */
     protected $balcon;
-
+    /** @var  EntityResolverInterface */
     protected $entity;
 
+    public function __construct(BalconInterface $balcon)
+    {
+        $this->balcon = $balcon;
+    }
+
     /**
-     * @return mixed
+     * @return EntityInterface
      */
     public function getEntity()
     {
@@ -25,18 +34,16 @@ class EntityResolver implements EntityResolverInterface
     }
 
     /**
-     * @param mixed $entity
+     * @param EntityInterface $entity
      */
     public function setEntity(EntityInterface $entity)
     {
         $this->entity = $entity;
     }
 
-    public function __construct(BalconInterface $balcon)
-    {
-        $this->balcon = $balcon;
-    }
-
+    /**
+     * Handles a page connected to the processes route
+     */
     public function process()
     {
         // TODO: observer entity_process_before pass $this (?)

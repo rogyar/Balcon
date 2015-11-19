@@ -6,13 +6,21 @@ namespace Plugins\Cms\Helper;
 use Plugins\Cms\Model\Block;
 use Plugins\Cms\Model\BlocksCollection;
 
+/**
+ * Class Filesystem
+ * @package Plugins\Cms\Helper
+ *
+ * Helper class that handles pages placed in the file system
+ */
 class Filesystem
 {
+    /**
+     * Path for the root directory with pages
+     * @var string
+     */
     protected $pagesDir;
 
     /**
-     * Returns path to the pages directory
-     *
      * @return string
      */
     public function getPagesDir()
@@ -26,6 +34,11 @@ class Filesystem
         return $this->pagesDir;
     }
 
+    /**
+     * Collects all root pages and their child blocks
+     *
+     * @return BlocksCollection
+     */
     public function collectPages()
     {
         $rootContents = new \DirectoryIterator($this->getPagesDir());
@@ -34,7 +47,6 @@ class Filesystem
             if ($fileInfo->isDot()) {
                 continue;
             }
-
             if ($fileInfo->isDir()) {
                 $this->collectBlocks(
                     $pagesCollection,
@@ -45,11 +57,18 @@ class Filesystem
         return $pagesCollection;
     }
 
+    /**
+     * Collects child blocks of the parent block
+     *
+     * @param BlocksCollection $collection
+     * @param $path
+     * @param Block|null $parent
+     */
     protected function collectBlocks(BlocksCollection $collection, $path, Block $parent = null)
     {
         $pageContents = new \DirectoryIterator($path);
         $block = new Block();
-        $block->setParent();
+        $block->setParent($parent);
         $block->setChildren(new BlocksCollection());
         $block->setPath($path);
         foreach ($pageContents as $fileInfo) {

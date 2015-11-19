@@ -8,12 +8,29 @@ use Mockery\CountValidator\Exception;
 use Plugins\Cms\Helper\Filesystem;
 use Plugins\Cms\Model\Block;
 
+/**
+ * Class Page
+ * @package Plugins\Cms\Model
+ *
+ * Represents a page entity with child blocks
+ */
 class Page implements EntityInterface
 {
-    protected $route;
-    protected $blocksCollection;
+    /**
+     * Block that matches current route
+     * @var Block
+     */
     protected $dispatchedBlock;
+    /**
+     * True if a page that matches current route has been found
+     * @var bool
+     */
     protected $isProcessed = false;
+    /** @var string */
+    protected $route;
+    /** @var BlocksCollection  */
+    protected $blocksCollection;
+
 
     public function __construct($route)
     {
@@ -37,7 +54,7 @@ class Page implements EntityInterface
     }
 
     /**
-     * @return mixed
+     * @return string
      */
     public function getRoute()
     {
@@ -45,20 +62,42 @@ class Page implements EntityInterface
     }
 
     /**
-     * @param mixed $route
+     * @param string $route
      */
     public function setRoute($route)
     {
         $this->route = $route;
     }
 
+    /**
+     * @return \Plugins\Cms\Model\Block
+     */
+    public function getDispatchedBlock()
+    {
+        return $this->dispatchedBlock;
+    }
+
+    /**
+     * @param \Plugins\Cms\Model\Block $block
+     */
+    public function setDispatchedBlock(Block $block)
+    {
+        $this->dispatchedBlock = $block;
+    }
+
+    /**
+     * Searches for a page that matches current route
+     * Returns true if the page has been found
+     *
+     * @return bool
+     */
     public function process()
     {
-        $route = "/{$this->getRoute()}/";
+        $route = "/{$this->getRoute()}";
         if ($route) {
             /** @var  $block */
             foreach ($this->blocksCollection->getBlocks() as $block) {
-                if ($block->getRoute() == $route) { // TODO: check if block is routeable
+                if ($block->getRoute() == $route) { // TODO: check if block is routable
                     $this->setDispatchedBlock($block);
                     $this->isProcessed = true;
                     return true;
@@ -70,15 +109,4 @@ class Page implements EntityInterface
 
         return false;
     }
-
-    public function getDispatchedBlock()
-    {
-        return $this->dispatchedBlock;
-    }
-
-    public function setDispatchedBlock(Block $block)
-    {
-        $this->dispatchedBlock = $block;
-    }
-
 }
