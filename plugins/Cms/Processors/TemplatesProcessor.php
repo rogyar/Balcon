@@ -6,6 +6,14 @@ namespace Plugins\Cms\Processors;
 use Plugins\Cms\Model\Page;
 use Plugins\Cms\Model\Block;
 
+// TODO: Refactor getting fallback parts
+
+/**
+ * Class TemplatesProcessor
+ * @package Plugins\Cms\Processors
+ *
+ * Processes final content generation.
+ */
 class TemplatesProcessor
 {
     /**
@@ -53,6 +61,12 @@ class TemplatesProcessor
      * @var string
      */
     protected $resultView;
+
+    public function __construct()
+    {
+        $this->generatePageLayout()
+            ->applyPageLayout();
+    }
 
     /**
      * @return mixed
@@ -149,7 +163,7 @@ class TemplatesProcessor
         if (empty($this->generatedViewsDir)) {
             //TODO: get value from config
             $pluginDir = dirname(dirname(__FILE__));
-            $this->generatedViewsDir = dirname(dirname($pluginDir)) . '/resources/views/generated/';
+            $this->generatedViewsDir = dirname(dirname($pluginDir)) . '/resources/views/generated/views/';
         }
 
         return $this->generatedViewsDir;
@@ -165,11 +179,15 @@ class TemplatesProcessor
     public function applyPageBlocksTemplates(Block $block)
     {
         $this->processBlockTemplate($block); // Process root block
+
+        /* Add root block custom params to the parameters set */
+        $this->resultViewParams['pageParams'] = $block->getBlockParams();
+
         $this->applyChildBlocksTemplates($block); // Process child blocks
         $this->generateResultViewFile($block);
 
         // TODO: get from config
-        $this->setResultView('generated' . $block->getRoute());
+        $this->setResultView('generated/views' . $block->getRoute());
 
         return $this->getResultView();
     }
@@ -198,7 +216,7 @@ class TemplatesProcessor
             $templateFileRawContents
         );
 
-        $this->content .= $templateFileRawContents;
+        $this->content .= $templateFileRawContents . "\n";
     }
 
     /**
@@ -273,7 +291,6 @@ class TemplatesProcessor
      */
     protected function generateResultViewFile(Block $block)
     {
-        $this->addOutputCommandForContent();
         $filePath = $this->getGeneratedViewsDir() . $block->getRoute() . '.blade.php';
         $fileDirPath = dirname($filePath);
         // Create directory if it does not exist
@@ -294,13 +311,39 @@ class TemplatesProcessor
     }
 
     /**
-     * Adds output command to result view
-     * for displaying all sections
+     * Creates actual layout file in generated content
      */
-    protected function addOutputCommandForContent()
+    protected function generatePageLayout()
     {
-        $this->content .= '
-            @yield(\'content\')
-        ';
+        $generatedLayoutFile = dirname($this->getGeneratedViewsDir()) . '/layout.blade.php';
+
+        /* Generate layout if it has not been generated yet */
+        if (!file_exists($generatedLayoutFile)) {
+            $themeLayoutFile = $this->getThemesDir() . $this->getCurrentTheme() . '/components/layout.blade.php';
+            /* Generate layout from the fallback theme */
+            if (!file_exists($themeLayoutFile)) {
+                $themeLayoutFile = $this->getThemesDir() . $this->getFallbackTheme() . '/components/layout.blade.php';
+            }
+            if (!file_exists($themeLayoutFile)) {
+                throw new \Exception("No layout file has been found");
+            }
+            try {
+                copy($themeLayoutFile, $generatedLayoutFile);
+            } catch (\Exception $e) {
+                sprintf('Cannot generate layout fuke. Make sure %s dir is writable', $this->getGeneratedViewsDir());
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * Adds layout extension to the result view
+     */
+    protected function applyPageLayout()
+    {
+        $this->content = "
+        @extends('generated/layout')
+        ";
     }
 }

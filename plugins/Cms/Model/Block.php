@@ -38,14 +38,20 @@ class Block
      * @var BlocksCollection
      */
     protected $children;
+
+    /**
+     * A set of parameters that will be passed to the template
+     * Actual only for the root block
+     * @var array
+     */
+    protected $blockParams;
+
     /** @var  string */
     protected $body;
     /** @var  Block */
     protected $parent;
     /** @var  string */
     protected $template;
-    /** @var  array */
-    protected $templateVariables;
     /** @var  string */
     protected $name;
 
@@ -95,6 +101,22 @@ class Block
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return array
+     */
+    public function getBlockParams()
+    {
+        return $this->blockParams;
+    }
+
+    /**
+     * @param array $blockParams
+     */
+    public function setBlockParams($blockParams)
+    {
+        $this->blockParams = $blockParams;
     }
 
     /**
