@@ -84,6 +84,7 @@ class Filesystem
             }
             if ($fileInfo->getExtension() == 'md') {
                 // TODO: check if all names will be compatible with URLs
+                $block->setFilename($fileInfo->getBasename());
                 $basename = substr($fileInfo->getBasename(), 0, (strlen($fileInfo->getBasename())- 3));
                 $block->setName($basename);
             }

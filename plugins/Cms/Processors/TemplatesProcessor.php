@@ -181,7 +181,7 @@ class TemplatesProcessor
         $this->processBlockTemplate($block); // Process root block
 
         /* Add root block custom params to the parameters set */
-        $this->resultViewParams['pageParams'] = $block->getBlockParams();
+        $this->resultViewParams['pageParams'] = $block->getParams();
 
         $this->applyChildBlocksTemplates($block); // Process child blocks
         $this->generateResultViewFile($block);

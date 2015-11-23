@@ -11,13 +11,8 @@ use Mockery\CountValidator\Exception;
  *
  * Represents a page block
  */
-class Block
+class Block extends Mdfile
 {
-    /**
-     * Absolute path to the block's md file
-     * @var  string
-     */
-    protected $path;
     /**
      * True if current block is accessable via URL
      * @var  bool
@@ -38,13 +33,6 @@ class Block
      * @var BlocksCollection
      */
     protected $children;
-
-    /**
-     * A set of parameters that will be passed to the template
-     * Actual only for the root block
-     * @var array
-     */
-    protected $blockParams;
 
     /** @var  string */
     protected $body;
@@ -72,22 +60,6 @@ class Block
     }
 
     /**
-     * @param string $path
-     */
-    public function setPath($path)
-    {
-        $this->path = $path;
-    }
-
-    /**
-     * @return string
-     */
-    public function getPath()
-    {
-        return $this->path;
-    }
-
-    /**
      * @param string $name
      */
     public function setName($name)
@@ -101,22 +73,6 @@ class Block
     public function getName()
     {
         return $this->name;
-    }
-
-    /**
-     * @return array
-     */
-    public function getBlockParams()
-    {
-        return $this->blockParams;
-    }
-
-    /**
-     * @param array $blockParams
-     */
-    public function setBlockParams($blockParams)
-    {
-        $this->blockParams = $blockParams;
     }
 
     /**
@@ -209,8 +165,9 @@ class Block
      */
     public function getBody()
     {
-        // FIXME: temporary solution
-        $this->body = file_get_contents($this->getPath() . '/' . $this->getName() . '.md');
+        if (!$this->body) {
+            $this->body = $this->getContent();
+        }
         return $this->body;
     }
 
