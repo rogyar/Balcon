@@ -27,7 +27,7 @@ class Mdfile
      * @var  string
      */
     protected $content;
-    
+
     /** @var  string */
     protected $filename;
 
