@@ -16,7 +16,7 @@ class FrontController extends Controller
     public function frontRouter($page = '')
     {
         // FIXME: Do not process front route for static assets
-        
+
         $app = app();
         /** @var \App\Core\Balcon $balcon */
         $balcon = $app->make('\App\Core\BalconInterface');
