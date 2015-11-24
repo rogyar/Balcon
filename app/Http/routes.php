@@ -11,4 +11,4 @@
 |
 */
 
-Route::get('/{page?}/{subpage?}', 'FrontController@frontRouter');
+Route::get('/{page?}', 'FrontController@frontRouter');

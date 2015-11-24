@@ -5,7 +5,7 @@
     <title>{{ isset($pageParams['title'])? $pageParams['title'] : '' }}</title>
     <meta name="description"
           content="{{ isset($pageParams['metaDescription']) ? $pageParams['metaDescription'] : '' }}">
-    
+
     @section('stylesheets')
         <link rel="stylesheet" href="css/styles.css?v=1.0">
         @show

@@ -33,12 +33,18 @@ class Mdfile
 
     /**
      * @return string
+     * @throws \Exception
      */
     public function getContent()
     {
         if (!$this->content) {
-            $rawContent = file_get_contents($this->getPath() . '/' . $this->getFilename());
-            $this->markdownHeaderParse($rawContent);
+            $blockMdFile = $this->getPath() . '/' . $this->getFilename();
+            if (file_exists($blockMdFile)) {
+                $rawContent = file_get_contents($blockMdFile);
+                $this->markdownHeaderParse($rawContent);
+            } else {
+                throw new \Exception("The block in {$this->getPath()} does not have .md file inside");
+            }
         }
         return $this->content;
     }

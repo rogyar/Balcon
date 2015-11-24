@@ -89,9 +89,6 @@ class Block extends Mdfile
                     break;
                 }
                 $blockName = $block->getName();
-                if (empty($blockName)) {
-                    throw new Exception("The block in {$this->getPath()} does not have .md file inside");
-                }
                 if ($this->route) {
                     $this->route = $blockName . '/' . $this->route;
                 } else {

@@ -84,9 +84,15 @@ class Filesystem
             }
             if ($fileInfo->getExtension() == 'md') {
                 // TODO: check if all names will be compatible with URLs
-                $block->setFilename($fileInfo->getBasename());
-                $basename = substr($fileInfo->getBasename(), 0, (strlen($fileInfo->getBasename())- 3));
-                $block->setName($basename);
+                $filename = $fileInfo->getFilename();
+                $parentDirName = basename(dirname($path . '/' . $filename));
+                $block->setFilename($filename);
+
+                /* Extract lead sort order order numbers from the directories names */
+                $blockNameParts = explode('.', $parentDirName, 2);
+                $blockName = (count($blockNameParts) > 1) ? $blockNameParts[1] : $blockNameParts[0];
+
+                $block->setName($blockName);
             }
         }
         $collection->addBlock($block);
