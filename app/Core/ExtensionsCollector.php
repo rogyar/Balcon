@@ -3,6 +3,8 @@
 namespace App\Core;
 
 
+use App\Resolvers\ResponseResolverInterface;
+use App\Resolvers\RouteResolverInterface;
 use Mockery\CountValidator\Exception;
 
 class ExtensionsCollector
@@ -13,17 +15,8 @@ class ExtensionsCollector
     protected $extensionsList;
     protected $eventListeners;
 
-    protected $resolversImplementations = [
-        'RouteResolver' => '',
-        'EntityResolver' => '',
-        'ResponseResolver' => '',
-    ];
-
-
-    public function __construct()
-    {
-
-    }
+    protected $routeResolversCollection = [];
+    protected $responseResolversCollection = [];
 
     /**
      * Returns array with extensions names, registered in the system
@@ -52,37 +45,14 @@ class ExtensionsCollector
         return $this->eventListeners;
     }
 
-    /**
-     * Returns a registered implementation class name for the requested resolver
-     *
-     * @param $resolverName
-     * @return string
-     */
-    public function getResolverImplementation($resolverName)
+    public function addRouteResolver(RouteResolverInterface $routeResolver)
     {
-        $resolverImplementation = '';
-        if (in_array($resolverName, array_keys($this->resolversImplementations))) {
-            $resolverImplementation = isset($this->resolversImplementations[$resolverName]) ?
-                $this->resolversImplementations[$resolverName] : '';
-
-            // If there's no implementation registered - maybe it's time to collect the implementations
-            if (empty($resolverImplementation)) {
-                $resolverImplementation = $this->collectResolversImplementations()[$resolverName];
-            }
-        }
-
-        // If the implementation is still empty that's really bad
-        if (empty($resolverImplementation)) {
-            // FIXME: maybe try to register a default implementation
-            throw new Exception("An implementation for resolver '$resolverName' is missing in the system");
-        }
-
-        return $resolverImplementation;
+        $this->routeResolversCollection[] = $routeResolver;
     }
 
-    public function setResolverImplementation($implementation)
+    public function addResponseResolver(ResponseResolverInterface $responseResolver)
     {
-        $this->resolversImplementations[$implementation['resolver']] = $implementation['class'];
+        $this->responseResolversCollection[] = $responseResolver;
     }
 
     /**
@@ -161,21 +131,20 @@ class ExtensionsCollector
     }
 
     /**
-     * Collects all resolvers implementations from the registered extensions
-     *
      * @return array
      */
-    protected function collectResolversImplementations()
+    public function getResponseResolversCollection()
     {
-        // FIXME: resolvers will not be collected. Will be injected via events observers instead
-
-        foreach ($this->getExtensionsList() as $extension) {
-
-        }
-
-        return $this->resolversImplementations;
+        return $this->responseResolversCollection;
     }
 
+    /**
+     * @return array
+     */
+    public function getRouteResolversCollection()
+    {
+        return $this->routeResolversCollection;
+    }
 
 
 }

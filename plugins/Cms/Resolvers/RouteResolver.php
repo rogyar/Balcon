@@ -3,6 +3,7 @@
 namespace Plugins\Cms\Resolvers;
 
 use App\Core\BalconInterface;
+use App\Core\EntityInterface;
 use App\Resolvers\EntityResolverInterface;
 use App\Resolvers\RouteResolverInterface;
 use Plugins\Cms\Model\Page;
@@ -15,14 +16,15 @@ use Plugins\Cms\Model\Page;
  */
 class RouteResolver implements RouteResolverInterface
 {
+    /**
+     * The entity instance that can process current route
+     * @var EntityInterface
+     */
+    protected $entity;
     /** @var  BalconInterface */
     protected $balcon;
     /** @var  string */
-    protected $entityResolver;
-    /** @var  string */
     protected $route;
-    /** @var bool */
-    protected $routeDispatched = false;
 
     /**
      * @return string
@@ -48,41 +50,41 @@ class RouteResolver implements RouteResolverInterface
         $this->balcon = $balcon;
     }
 
+    /**
+     * @return EntityInterface
+     */
+    public function getEntity()
+    {
+        return $this->entity;
+    }
 
     /**
-     * Processes the requested route. If the requested route has not been
-     * dispatched in an observer - assign Cms Page entity resolver for
-     * the further processing
+     * @param EntityInterface $entity
+     */
+    public function setEntity(EntityInterface $entity)
+    {
+        $this->entity = $entity;
+    }
+
+
+    /**
+     * Processes the requested route. Registers current resolver if
+     * the route can be processed by CMS module
      *
      * @param string $route
-     * @return EntityResolverInterface
      */
     public function process($route)
     {
-        $this->setRoute($route);
-        // TODO: observer route_process_before pass $this
-
-        // If the route has nod been dispatched - try to use standard route from the CMS plugin
-        if (!$this->routeDispatched) {
-            $this->setEntityResolver('Plugins\Cms\Resolvers\EntityResolver'); // Default value
+        /* Check if route resolver has not been registered yet */
+        if (!$this->balcon->getRouteResolver()) {
+            $this->setRoute($route);
+            $this->setEntity(new Page($route));
+            $this->getEntity()->process();
+            /* Check if the route can be processed by CMS module.
+               if yes - register current resolver */
+            if ($this->getEntity()->isProcessed()) {
+                $this->balcon->setRouteResolver($this);
+            }
         }
-
-        return $this->getEntityResolver();
-    }
-
-    /**
-     * @return EntityResolverInterface
-     */
-    public function getEntityResolver()
-    {
-        return $this->entityResolver;
-    }
-
-    /**
-     * @param string $resolverClassName
-     */
-    public function setEntityResolver($resolverClassName)
-    {
-        $this->entityResolver = $resolverClassName;
     }
 }

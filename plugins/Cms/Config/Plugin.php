@@ -27,17 +27,11 @@ class Plugin implements PluginInterface
     public function getEvents()
     {
         return [
-            'App\Events\RouteResolverRegisterBefore' => [
-                'Plugins\Cms\Listeners\RouteResolverRegisterBeforeHandler'
+            'App\Events\RouteResolversRegister' => [
+                'Plugins\Cms\Listeners\RouteResolverRegister'
             ],
-            'App\Events\RouteResolverRegisterAfter' => [
-                'Plugins\Cms\Listeners\RouteResolverRegisterAfterHandler'
-            ],
-            'App\Events\EntityResolverRegisterBefore' => [
-                'Plugins\Cms\Listeners\EntityResolverRegisterBeforeHandler'
-            ],
-            'App\Events\ResponseResolverRegisterBefore' => [
-                'Plugins\Cms\Listeners\ResponseResolverRegisterBeforeHandler'
+            'App\Events\ResponseResolversRegister' => [
+                'Plugins\Cms\Listeners\ResponseResolverRegister'
             ]
         ];
     }

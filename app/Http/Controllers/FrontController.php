@@ -3,17 +3,19 @@
 namespace App\Http\Controllers;
 
 use App\Events\RouteResolverRegisterBefore;
+use App\Resolvers\ResponseResolverInterface;
+use App\Resolvers\RouteResolverInterface;
 use App\User;
 use App\Http\Controllers\Controller;
-use App\Events\RouteResolverRegisterAfter;
+use App\Events\RouteResolversRegister;
 use App\Events\EntityResolverRegisterBefore;
-use App\Events\ResponseResolverRegisterBefore;
+use App\Events\ResponseResolversRegister;
 use App\Events\ResponseResolverRegisterAfter;
 use Event;
 
 class FrontController extends Controller
 {
-    public function frontRouter($page = '')
+    public function frontRouter($route = '')
     {
         // FIXME: Do not process front route for static assets
 
@@ -21,40 +23,30 @@ class FrontController extends Controller
         /** @var \App\Core\Balcon $balcon */
         $balcon = $app->make('\App\Core\BalconInterface');
 
-        event(new RouteResolverRegisterBefore($balcon));
+        /* Register extensions */
+        $extensionsContainer = $balcon->getExtensionsContainer();
 
-        // Assign an implementation of the Router Resolver
-        $app->bind(
-            '\App\Resolvers\RouteResolverInterface',
-            $balcon->getExtensionsContainer()->getResolverImplementation('RouteResolver')
-        );
+        /* Register route resolvers from all extensions */
+        event(new RouteResolversRegister($balcon));
 
-        event(new RouteResolverRegisterAfter($balcon));
-        // Call Route Resolver
-        $balcon->getRouteResolver()->process($page);
+        /* Process all route resolvers */
+        /** @var RouteResolverInterface $routeResolver */
+        foreach ($extensionsContainer->getRouteResolversCollection() as $routeResolver)
+        {
+            $routeResolver->process($route);
+        }
 
-        event(new EntityResolverRegisterBefore($balcon));
+        // TODO: if there's no registered route resolver - process 404 page
 
-        // Assign an implementation of the Entity Resolver
-        $app->bind(
-            '\App\Resolvers\EntityResolverInterface',
-            $balcon->getExtensionsContainer()->getResolverImplementation('EntityResolver')
-        );
+        /* Register response resolvers from all extensions */
+        event(new ResponseResolversRegister($balcon));
 
-        // Call Entity Resolver
-        $balcon->getEntityResolver()->process();
-
-        event(new ResponseResolverRegisterBefore($balcon));
-
-        $app->bind('\App\Resolvers\ResponseResolverInterface',
-            $balcon->getExtensionsContainer()->getResolverImplementation('ResponseResolver')
-        );
-
-        event(new ResponseResolverRegisterAfter($balcon));
-
-        $balcon->getResponseResolver()->process();
-
-        // todo: event response send before
+        /* Process all response resolvers */
+        /** @var ResponseResolverInterface $responseResolver */
+        foreach ($extensionsContainer->getResponseResolversCollection() as $responseResolver)
+        {
+            $responseResolver->process();
+        }
 
         return $balcon->getResponseResolver()->sendResponse();
     }

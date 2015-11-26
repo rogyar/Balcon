@@ -3,6 +3,7 @@
 namespace Plugins\Cms\Resolvers;
 
 use App\Core\BalconInterface;
+use App\Core\EntityInterface;
 use App\Resolvers\ResponseResolverInterface;
 use Plugins\Cms\Model\Page;
 use Plugins\Cms\Processors\TemplatesProcessor;
@@ -67,18 +68,29 @@ class ResponseResolver implements ResponseResolverInterface
      */
     public function process()
     {
-        // TODO: observer response_process_before pass $this (?)
-        $entityResolver = $this->balcon->getEntityResolver();
-        $entity = $entityResolver->getEntity();
-        if ($entity->isProcessed()) {
-            if ($entity instanceof Page) {
-                $this->setResponse(
-                    $this->processCmsPage($entity)
-                );
-            }
-        } else {
-            // TODO: process 404 response
+        $routeResolver = $this->balcon->getRouteResolver();
+        /** @var Page $entity */
+        $entity = $routeResolver->getEntity();
+        if ($this->requestCanBeHandled($entity)) {
+
+            /* Register current resolver as response resolver */
+            $this->balcon->setResponseResolver($this);
+
+            $this->setResponse(
+                $this->processCmsPage($entity)
+            );
         }
+    }
+
+    /**
+     * Returns true if current resolver can process the request
+     *
+     * @param EntityInterface $entity
+     * @return bool
+     */
+    protected function requestCanBeHandled(EntityInterface $entity)
+    {
+        return (!$this->balcon->getResponseResolver() && $entity instanceof Page && $entity->isProcessed());
     }
 
     /**
