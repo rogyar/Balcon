@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{{ isset($pageParams['title'])? $pageParams['title'] : '' }}</title>
     <meta name="description"
-          content="{{ isset($pageParams['metaDescription']) ? $pageParams['metaDescription'] : '' }}">
+          content="{{ isset($pageParams['description']) ? $pageParams['description'] : '' }}">
     @section('stylesheets')
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
               integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
@@ -37,18 +37,13 @@
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <!-- TODO: separate section here -->
                 <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <a class="page-scroll" href="#about">About</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#services">Services</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#portfolio">Portfolio</a>
-                    </li>
-                    <li>
-                        <a class="page-scroll" href="#contact">Contact</a>
-                    </li>
+                    @foreach ($navigation as $navitem)
+                        <li>
+                            <a class="page-scroll" href="{{ $navitem['route'] }}">
+                                {{ $navitem['name']  }}
+                            </a>
+                        </li>
+                    @endforeach
                 </ul>
             </div>
             <!-- /.navbar-collapse -->

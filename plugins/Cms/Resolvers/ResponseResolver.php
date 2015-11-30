@@ -105,10 +105,12 @@ class ResponseResolver implements ResponseResolverInterface
         $dispatchedPage = $page->getDispatchedBlock();
         if ($dispatchedPage) {
             $view = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
-            $response = view(
-                $view,
-                $this->templatesProcessor->getResultViewParams()
-            )->render();
+            $navigationItems = $page->getNavigationItems();
+            $viewParameters = array_merge(
+                $this->templatesProcessor->getResultViewParams(),
+                ['navigation' => $navigationItems]
+            );
+            $response = view($view, $viewParameters)->render();
 
             return $response;
         } else {

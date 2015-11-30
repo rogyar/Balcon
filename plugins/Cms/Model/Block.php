@@ -15,6 +15,7 @@ class Block extends Mdfile
 {
     /**
      * True if current block is accessable via URL
+     * TODO: consider if this feature is really necessary
      * @var  bool
      */
     protected $isRoutable;
@@ -33,6 +34,13 @@ class Block extends Mdfile
      * @var BlocksCollection
      */
     protected $children;
+
+    /**
+     * If true, the page link will be shown in the main
+     * navigation menu
+     * @var bool
+     */
+    protected $showInNavigation = false;
 
     /** @var  string */
     protected $body;
@@ -74,6 +82,15 @@ class Block extends Mdfile
     {
         return $this->name;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getShowInNavigation()
+    {
+        return $this->showInNavigation;
+    }
+
 
     /**
      * Generates and returns current route
@@ -206,6 +223,39 @@ class Block extends Mdfile
     public function getChild($name)
     {
         return $this->getChildren()->getBlock($name);
+    }
+
+    /**
+     * Returns true if current block should be included
+     * in main navigation
+     *
+     * @return bool
+     */
+    public function includeInNavigation()
+    {
+        if ($this->isRootBlock()) {
+            $customParams = $this->getParams();
+            if (!isset($customParams['exclude_from_navigation']) ||
+                $customParams['exclude_from_navigation'] == false) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Returns true if current block is page's root
+     *
+     * @return bool
+     */
+    protected function isRootBlock()
+    {
+        if (!$this->getParent()) {
+            return true;
+        }
+
+        return false;
     }
 
 }

@@ -30,6 +30,8 @@ class Page implements EntityInterface
     protected $route;
     /** @var BlocksCollection  */
     protected $blocksCollection;
+    /** @var  array */
+    protected $navigationItems = [];
 
 
     public function __construct($route)
@@ -95,7 +97,7 @@ class Page implements EntityInterface
     {
         $route = "/{$this->getRoute()}";
         if ($route) {
-            /** @var  $block */
+            /** @var  Block $block */
             foreach ($this->blocksCollection->getBlocks() as $block) {
                 if ($block->getRoute() == $route) { // TODO: check if block is routable
                     $this->setDispatchedBlock($block);
@@ -108,5 +110,27 @@ class Page implements EntityInterface
         }
 
         return false;
+    }
+
+    /**
+     * Collects and returns all navigation links
+     *
+     * @return array
+     */
+    public function getNavigationItems()
+    {
+        if (0 == count($this->navigationItems)) {
+            /** @var Block $block */
+            foreach ($this->blocksCollection->getBlocks() as $block) {
+                if ($block->includeInNavigation()) {
+                    $this->navigationItems[] = [
+                        'name' => $block->getParams()['name'],
+                        'route' => $block->getRoute()
+                    ];
+                }
+            }
+        }
+
+        return $this->navigationItems;
     }
 }

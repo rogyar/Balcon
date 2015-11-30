@@ -19,6 +19,12 @@ class Mdfile
     protected $path;
     /**
      * A set of parameters that will be passed to the template
+     * Available params:
+     * - title - page title tag
+     * - description - meta-description tag
+     * - name - page name in navigation menu
+     * - exclude_from_navigation - if true, the page is not displayed in navigation menu
+     *
      * @var array
      */
     protected $params;
