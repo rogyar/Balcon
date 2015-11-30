@@ -7,6 +7,7 @@ use Plugins\Cms\Model\Page;
 use Plugins\Cms\Model\Block;
 
 // TODO: Refactor getting fallback parts
+// TODO: Put layout file to non-public place
 
 /**
  * Class TemplatesProcessor
