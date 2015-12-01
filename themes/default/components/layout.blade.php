@@ -4,9 +4,8 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ isset($pageParams['title'])? $pageParams['title'] : '' }}</title>
-    <meta name="description"
-          content="{{ isset($pageParams['description']) ? $pageParams['description'] : '' }}">
+    <title>{{ $page->renderParam('title') }}</title>
+    <meta name="description" content="{{ $page->renderParam('description') }}">
     @section('stylesheets')
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css"
               integrity="sha512-dTfge/zgoMYpP7QbHy4gWMEGsbsdZeCXz7irItjcC3sPUFtf0kuFbDz/ixG7ArTxmDjLXDmezHubeNikyKGVyQ=="
@@ -18,7 +17,6 @@
         <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
         <![endif]-->
     @show
-
 </head>
 
 <body id="page-top">
@@ -33,11 +31,10 @@
                 </button>
                 <a class="navbar-brand page-scroll" href="#page-top">Balcon :)</a>
             </div>
-
             <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                 <!-- TODO: separate section here -->
                 <ul class="nav navbar-nav navbar-right">
-                    @foreach ($navigation as $navitem)
+                    @foreach ($page->getNavigationItems() as $navitem)
                         <li>
                             <a class="page-scroll" href="{{ $navitem['route'] }}">
                                 {{ $navitem['name']  }}

@@ -5,6 +5,7 @@ namespace Plugins\Cms\Resolvers;
 use App\Core\BalconInterface;
 use App\Core\EntityInterface;
 use App\Resolvers\ResponseResolverInterface;
+use Plugins\Cms\Helper\Renderer;
 use Plugins\Cms\Model\Page;
 use Plugins\Cms\Processors\TemplatesProcessor;
 
@@ -105,12 +106,9 @@ class ResponseResolver implements ResponseResolverInterface
         $dispatchedPage = $page->getDispatchedBlock();
         if ($dispatchedPage) {
             $view = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
-            $navigationItems = $page->getNavigationItems();
-            $viewParameters = array_merge(
-                $this->templatesProcessor->getResultViewParams(),
-                ['navigation' => $navigationItems]
-            );
-            $response = view($view, $viewParameters)->render();
+            $renderer = new Renderer($this->templatesProcessor->getResultViewParams());
+            $renderer->setNavigationItems($page->getNavigationItems());
+            $response = view($view, ['page' => $renderer])->render();
 
             return $response;
         } else {

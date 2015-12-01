@@ -182,7 +182,7 @@ class TemplatesProcessor
         $this->processBlockTemplate($block); // Process root block
 
         /* Add root block custom params to the parameters set */
-        $this->resultViewParams['pageParams'] = $block->getParams();
+        $this->resultViewParams['customParams'] = $block->getParams();
 
         $this->applyChildBlocksTemplates($block); // Process child blocks
         $this->generateResultViewFile($block);
@@ -213,7 +213,7 @@ class TemplatesProcessor
         }
         $templateFileRawContents = str_replace(
             self::BLOCK_TEMPLATE_DIRECTIVE,
-            "\$$blockNameInTemplate",
+            "\$page->renderParam('$blockNameInTemplate')",
             $templateFileRawContents
         );
 
