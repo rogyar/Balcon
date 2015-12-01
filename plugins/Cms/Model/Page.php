@@ -123,14 +123,14 @@ class Page implements EntityInterface
             /** @var Block $block */
             foreach ($this->blocksCollection->getBlocks() as $block) {
                 if ($block->includeInNavigation()) {
-                    $this->navigationItems[] = [
+                    $this->navigationItems[$block->getSortOrderValue()] = [
                         'name' => isset($block->getParams()['name'])? $block->getParams()['name'] : '',
                         'route' => $block->getRoute()
                     ];
                 }
             }
         }
-
+        ksort($this->navigationItems);
         return $this->navigationItems;
     }
 }

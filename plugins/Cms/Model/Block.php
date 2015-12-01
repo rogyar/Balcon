@@ -50,6 +50,8 @@ class Block extends Mdfile
     protected $template;
     /** @var  string */
     protected $name;
+    /** @var  string */
+    protected $sortOrderValue;
 
     /**
      * @param BlocksCollection $collection
@@ -91,6 +93,24 @@ class Block extends Mdfile
         return $this->showInNavigation;
     }
 
+    /**
+     * @return string
+     */
+    public function getSortOrderValue()
+    {
+        if (!$this->sortOrderValue) {
+            $this->sortOrderValue = $this->getName();
+        }
+        return $this->sortOrderValue;
+    }
+
+    /**
+     * @param string $sortOrderValue
+     */
+    public function setSortOrderValue($sortOrderValue)
+    {
+        $this->sortOrderValue = $sortOrderValue;
+    }
 
     /**
      * Generates and returns current route

@@ -36,7 +36,7 @@ class BlocksCollection
      */
     public function addBlock(Block $block)
     {
-        $this->blocks[] = $block;
+        $this->blocks[$block->getSortOrderValue()] = $block;
     }
 
     /**

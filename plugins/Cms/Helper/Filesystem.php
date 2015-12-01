@@ -87,6 +87,7 @@ class Filesystem
                 $filename = $fileInfo->getFilename();
                 $parentDirName = basename(dirname($path . '/' . $filename));
                 $block->setFilename($filename);
+                $block->setSortOrderValue($parentDirName);
 
                 /* Extract lead sort order order numbers from the directories names */
                 $blockNameParts = explode('.', $parentDirName, 2);
