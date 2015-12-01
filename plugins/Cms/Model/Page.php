@@ -124,7 +124,8 @@ class Page implements EntityInterface
             foreach ($this->blocksCollection->getBlocks() as $block) {
                 if ($block->includeInNavigation()) {
                     $this->navigationItems[$block->getSortOrderValue()] = [
-                        'name' => isset($block->getParams()['name'])? $block->getParams()['name'] : '',
+                        'name' => isset($block->getParams()['navigation_title'])?
+                            $block->getParams()['navigation_title'] : '',
                         'route' => $block->getRoute()
                     ];
                 }
