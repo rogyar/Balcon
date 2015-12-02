@@ -63,8 +63,9 @@ class TemplatesProcessor
      */
     protected $resultView;
 
-    public function __construct()
+    public function __construct($defaultTemplate)
     {
+        $this->defaultTemplate = $defaultTemplate;
         $this->generatePageLayout()
             ->applyPageLayout();
     }
@@ -275,7 +276,8 @@ class TemplatesProcessor
             }
         }
         // There's no template in the theme and fallback theme - use default template
-        $defaultTemplatePath = $this->getThemesDir() . $this->getFallbackTheme() . '/templates/default.blade.php';
+        $defaultTemplatePath = $this->getThemesDir() . $this->getFallbackTheme() .
+            '/templates/' . $this->getDefaultTemplate();
         if (file_exists($defaultTemplatePath)) {
             return file_get_contents($defaultTemplatePath);
         } else {

@@ -35,7 +35,6 @@ class ResponseResolver implements ResponseResolverInterface
     public function __construct(BalconInterface $balcon)
     {
         $this->balcon = $balcon;
-        $this->setTemplatesProcessor(new TemplatesProcessor());
     }
 
     /**
@@ -105,6 +104,7 @@ class ResponseResolver implements ResponseResolverInterface
     {
         $dispatchedPage = $page->getDispatchedBlock();
         if ($dispatchedPage) {
+            $this->setTemplatesProcessor(new TemplatesProcessor('default.blade.php'));
             $view = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
             $renderer = new Renderer($this->templatesProcessor->getResultViewParams());
             $renderer->setNavigationItems($page->getNavigationItems());

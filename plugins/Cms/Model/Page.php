@@ -88,6 +88,14 @@ class Page implements EntityInterface
     }
 
     /**
+     * @return BlocksCollection
+     */
+    public function getBlocksCollection()
+    {
+        return $this->blocksCollection;
+    }
+
+    /**
      * Searches for a page that matches current route
      * Returns true if the page has been found
      *

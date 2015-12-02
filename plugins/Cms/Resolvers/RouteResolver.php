@@ -4,7 +4,6 @@ namespace Plugins\Cms\Resolvers;
 
 use App\Core\BalconInterface;
 use App\Core\EntityInterface;
-use App\Resolvers\EntityResolverInterface;
 use App\Resolvers\RouteResolverInterface;
 use Plugins\Cms\Model\Page;
 
