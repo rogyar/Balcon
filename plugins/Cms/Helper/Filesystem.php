@@ -84,6 +84,7 @@ class Filesystem
             }
             if ($fileInfo->getExtension() == 'md') {
                 // TODO: check if all names will be compatible with URLs
+                // TODO: store created_at and author
                 $filename = $fileInfo->getFilename();
                 $parentDirName = basename(dirname($path . '/' . $filename));
                 $block->setFilename($filename);

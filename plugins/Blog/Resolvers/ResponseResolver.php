@@ -30,7 +30,6 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
         /** @var Page $entity */
         $entity = $routeResolver->getEntity();
         if ($this->requestCanBeHandled($entity)) {
-
             /* Register current resolver as response resolver */
             $this->balcon->setResponseResolver($this);
 
@@ -53,6 +52,7 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
         if ($dispatchedPage) {
 
             /* Check the route to identify the blog page type index or post */
+            // TODO: implement as a separate routine that has a list of routes for listofposts page
             $pageIsBlogpost = (count(explode('/', $page->getRoute())) > 1);
             $defaultTemplate = ($pageIsBlogpost)? 'blogpost.blade.php' : 'blog.blade.php';
             $this->setTemplatesProcessor(new TemplatesProcessor($defaultTemplate));
@@ -70,6 +70,18 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
             return $response;
         } else {
             throw new \Exception("No CMS page has been dispatched");
+        }
+    }
+
+    /**
+     * @inheritdoc
+     */
+    protected function requestCanBeHandled(EntityInterface $entity)
+    {
+        if ($entity instanceof Page && (preg_match('/^(\/blog)(\/|$)/', $entity->getRoute()))) {
+            return parent::requestCanBeHandled($entity);
+        } else {
+            return false;
         }
     }
 }

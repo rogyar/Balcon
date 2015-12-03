@@ -27,8 +27,8 @@ class Plugin implements PluginInterface
     public function getEvents()
     {
         return [
-            'App\Events\RouteResolversRegister' => [
-                'Plugins\Blog\Listeners\RouteResolverRegister'
+            'App\Events\ResponseResolversRegister' => [
+                'Plugins\Blog\Listeners\ResponseResolverRegister'
             ]
         ];
     }
