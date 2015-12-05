@@ -11,4 +11,4 @@
 |
 */
 
-Route::get('/{page?}', 'FrontController@frontRouter');
+Route::get('{page?}', 'FrontController@frontRouter')->where('page', '([A-z\d-\/_.]+)?');

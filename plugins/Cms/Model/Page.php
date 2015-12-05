@@ -13,6 +13,7 @@ use Plugins\Cms\Model\Block;
  * @package Plugins\Cms\Model
  *
  * Represents a page entity with child blocks
+ * TODO: that's an exact place where you can optimise something if got bored
  */
 class Page implements EntityInterface
 {
@@ -107,10 +108,9 @@ class Page implements EntityInterface
         if ($route) {
             /** @var  Block $block */
             foreach ($this->blocksCollection->getBlocks() as $block) {
-                if ($block->getRoute() == $route) { // TODO: check if block is routable
-                    $this->setDispatchedBlock($block);
-                    $this->isProcessed = true;
-                    return true;
+                $this->routeDispatch($block, $route);
+                if ($this->getDispatchedBlock()) {
+                    break;
                 }
             }
         } else {
@@ -118,6 +118,34 @@ class Page implements EntityInterface
         }
 
         return false;
+    }
+
+    /**
+     * Goes recursively trough blocks and attempts to dispatch
+     * the specified route
+     *
+     * @param \Plugins\Cms\Model\Block $block
+     * @param string $route
+     * @return bool
+     */
+    protected function routeDispatch(Block $block, $route)
+    {
+        if (!$this->getDispatchedBlock()) {
+            if ($block->getRoute() == $route) { // TODO: check if block is routable
+                $this->setDispatchedBlock($block);
+                $this->isProcessed = true;
+                return true;
+            } elseif (count($block->getChildren()->getBlocks()) > 0) { // Go trough child blocks
+                /** @var Block $childBlock */
+                foreach ($block->getChildren()->getBlocks() as $childBlock) {
+                    $this->routeDispatch($childBlock, $route);
+                    if ($this->getDispatchedBlock()) {
+                        break;
+                    }
+                }
+            }
+        }
+        return true;
     }
 
     /**

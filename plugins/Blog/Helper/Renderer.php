@@ -50,6 +50,7 @@ class Renderer extends \Plugins\Cms\Helper\Renderer
             'author' => '',
             'date' => '',
             'title' => $customPostParameters['title'],
+            'url' => $post->getRoute()
         ];
     }
 
