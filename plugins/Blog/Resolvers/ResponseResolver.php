@@ -6,6 +6,7 @@ use App\Core\BalconInterface;
 use App\Core\EntityInterface;
 use App\Resolvers\ResponseResolverInterface;
 use Plugins\Cms\Helper\Renderer;
+use Plugins\Blog\Config\Plugin;
 use Plugins\Blog\Helper\Renderer as BlogIndexRenderer;
 use Plugins\Cms\Model\Page;
 use Plugins\Cms\Processors\TemplatesProcessor;
@@ -62,6 +63,7 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
                 $renderer = new Renderer($this->templatesProcessor->getResultViewParams());
             } else {
                 $renderer = new BlogIndexRenderer($this->templatesProcessor->getResultViewParams());
+                $renderer->collectListOfPosts($page);
             }
 
             $renderer->setNavigationItems($page->getNavigationItems());
@@ -78,7 +80,8 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
      */
     protected function requestCanBeHandled(EntityInterface $entity)
     {
-        if ($entity instanceof Page && (preg_match('/^(\/blog)(\/|$)/', $entity->getRoute()))) {
+        $blogRoute = Plugin::getConfig('blogRootBlockName');
+        if ($entity instanceof Page && (preg_match("/^($blogRoute)(\/|\$)/", $entity->getRoute()))) {
             return parent::requestCanBeHandled($entity);
         } else {
             return false;

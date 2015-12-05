@@ -124,7 +124,7 @@ class ExtensionsCollector
 
             if (count($extensionEvents) > 0) {
                 // FIXME: array merge by keys
-                $this->eventListeners = array_merge($this->eventListeners, $extensionEvents);
+                $this->eventListeners = array_merge_recursive($this->eventListeners, $extensionEvents);
             }
         }
 

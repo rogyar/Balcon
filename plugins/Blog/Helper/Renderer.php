@@ -5,6 +5,7 @@ namespace Plugins\Blog\Helper;
 use Plugins\Cms\Model\BlocksCollection;
 use Plugins\Cms\Model\Page;
 use Plugins\Cms\Model\Block;
+use Plugins\Blog\Config\Plugin;
 
 /**
  * @inheritdoc
@@ -37,7 +38,10 @@ class Renderer extends \Plugins\Cms\Helper\Renderer
      */
     public function collectListOfPosts(Page $post)
     {
-        $this->listOfPosts = $post->getBlocksCollection();
+        $pagesCollection = $post->getBlocksCollection();
+        $blogPostsCollection = $pagesCollection->getBlock(Plugin::getConfig('blogRootBlockName'))
+            ->getChildren();
+        $this->listOfPosts = $blogPostsCollection;
     }
 
     public function getPostInfo(Block $post) {

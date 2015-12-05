@@ -5,6 +5,10 @@ use \App\Core\PluginInterface;
 
 class Plugin implements PluginInterface
 {
+    protected static $config = [
+        'blogRootBlockName' => 'blog'
+    ];
+
     /**
      * @inheritdoc
      */
@@ -31,5 +35,20 @@ class Plugin implements PluginInterface
                 'Plugins\Blog\Listeners\ResponseResolverRegister'
             ]
         ];
+    }
+
+    /**
+     * Returns value of the requested configuration parameter
+     *
+     * @param $paramName
+     * @return string
+     */
+    public static function getConfig($paramName)
+    {
+        if (isset(self::$config[$paramName])) {
+            return self::$config[$paramName];
+        } else {
+            return '';
+        }
     }
 }
