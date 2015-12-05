@@ -330,7 +330,7 @@ class TemplatesProcessor
             try {
                 copy($themeLayoutFile, $generatedLayoutFile);
             } catch (\Exception $e) {
-                sprintf('Cannot generate layout fuke. Make sure %s dir is writable', $this->getGeneratedViewsDir());
+                sprintf('Cannot generate layout file. Make sure %s dir is writable', $this->getGeneratedViewsDir());
             }
         }
 
