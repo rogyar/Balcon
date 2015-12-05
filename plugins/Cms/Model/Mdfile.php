@@ -37,7 +37,7 @@ class Mdfile
      */
     public function getContent()
     {
-        if (!$this->content) {
+        if (!isset($this->content)) {
             $blockMdFile = $this->getPath() . '/' . $this->getFilename();
             if (file_exists($blockMdFile)) {
                 $rawContent = file_get_contents($blockMdFile);
@@ -46,6 +46,7 @@ class Mdfile
                 throw new \Exception("The block in {$this->getPath()} does not have .md file inside");
             }
         }
+        
         return $this->content;
     }
 
@@ -62,7 +63,7 @@ class Mdfile
      */
     public function getParams()
     {
-        if (!$this->params) {
+        if (!isset($this->params)) {
             $this->getContent();
         }
 
