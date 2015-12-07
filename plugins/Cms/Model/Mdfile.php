@@ -34,8 +34,11 @@ class Mdfile
      */
     protected $content;
 
-    /** @var  string */
-    protected $filename;
+    /**
+     *  File attributes: updated_at, filename, owner
+     * @var array
+     */
+    protected $fileAttrs;
 
     /**
      * @return string
@@ -44,7 +47,7 @@ class Mdfile
     public function getContent()
     {
         if (!$this->content) {
-            $blockMdFile = $this->getPath() . '/' . $this->getFilename();
+            $blockMdFile = $this->getPath() . '/' . $this->getFileAttrs()['filename'];
             if (file_exists($blockMdFile)) {
                 $rawContent = file_get_contents($blockMdFile);
                 $this->markdownHeaderParse($rawContent);
@@ -100,19 +103,19 @@ class Mdfile
     }
 
     /**
-     * @return string
+     * @return array
      */
-    public function getFilename()
+    public function getFileAttrs()
     {
-        return $this->filename;
+        return $this->fileAttrs;
     }
 
     /**
-     * @param string $filename
+     * @param array $fileAttrs
      */
-    public function setFilename($filename)
+    public function setFileAttrs($fileAttrs)
     {
-        $this->filename = $filename;
+        $this->fileAttrs = $fileAttrs;
     }
 
     /**

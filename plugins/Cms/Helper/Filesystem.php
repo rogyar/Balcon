@@ -87,7 +87,13 @@ class Filesystem
                 // TODO: store created_at and author
                 $filename = $fileInfo->getFilename();
                 $parentDirName = basename(dirname($path . '/' . $filename));
-                $block->setFilename($filename);
+
+                $block->setFileAttrs([
+                    'filename' => $filename,
+                    'owner' => $fileInfo->getOwner(),
+                    'updated_at' => $fileInfo->getMTime()
+                ]);
+
                 $block->setSortOrderValue($parentDirName);
 
                 /* Extract lead sort order order numbers from the directories names */

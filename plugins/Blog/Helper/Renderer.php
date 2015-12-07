@@ -41,7 +41,7 @@ class Renderer extends \Plugins\Cms\Helper\Renderer
         $pagesCollection = $post->getBlocksCollection();
         $blogPostsCollection = $pagesCollection->getBlock(Plugin::getConfig('blogRootBlockName'))
             ->getChildren();
-        $this->listOfPosts = $blogPostsCollection;
+        $this->listOfPosts = $this->sortPosts($blogPostsCollection);
     }
 
     public function getPostInfo(Block $post) {
@@ -70,5 +70,36 @@ class Renderer extends \Plugins\Cms\Helper\Renderer
         }
 
         return $excerpt;
+    }
+
+    /**
+     * Sort posts by 'post_date' parameter provided in
+     * the .md file headers. If 'post_date' parameter is not provided
+     * the file last modification time will be used for sorting
+     *
+     * @param BlocksCollection $postsCollection
+     * @return BlocksCollection $postsCollection
+     */
+    protected function sortPosts(BlocksCollection $postsCollection)
+    {
+        $sortedBlocks = [];
+        /** @var Block $block */
+        foreach ($postsCollection->getBlocks() as $block) {
+            $customBlockParams = $block->getParams();
+            if (isset($customBlockParams['post_date'])) {
+                $postTimestamp = strtotime($customBlockParams['post_date']);
+                $sortedBlocks[(int)$postTimestamp] = $block;
+            } else {
+                $postDate = $block->getFileAttrs()['updated_at'];
+                $sortedBlocks[strtotime($postDate)] = $block;
+            }
+        }
+        if (count($sortedBlocks) > 0) {
+            ksort($sortedBlocks);
+            $postsCollection->setBlocks($sortedBlocks);
+        }
+
+
+        return $postsCollection;
     }
 }

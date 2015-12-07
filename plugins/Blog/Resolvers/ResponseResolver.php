@@ -2,13 +2,13 @@
 
 namespace Plugins\Blog\Resolvers;
 
-use App\Core\BalconInterface;
 use App\Core\EntityInterface;
 use App\Resolvers\ResponseResolverInterface;
 use Plugins\Blog\Config\Plugin;
 use Plugins\Blog\Helper\Renderer;
 use Plugins\Cms\Model\Page;
 use Plugins\Cms\Processors\TemplatesProcessor;
+use Plugins\Cms\Model\Block;
 
 /**
  * Class ResponseResolver

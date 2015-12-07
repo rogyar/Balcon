@@ -7,6 +7,8 @@ use App\Resolvers\ResponseResolverInterface;
 use App\Resolvers\RouteResolverInterface;
 use Mockery\CountValidator\Exception;
 
+// TODO: Implement extensions sort order
+
 class ExtensionsCollector
 {
     const PLUGINS_NAMESPACE = 'Plugins\\';

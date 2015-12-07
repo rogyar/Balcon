@@ -97,6 +97,15 @@ class Page implements EntityInterface
     }
 
     /**
+     * @param BlocksCollection $blocksCollection
+     */
+    public function setBlocksCollection($blocksCollection)
+    {
+        $this->blocksCollection = $blocksCollection;
+    }
+
+
+    /**
      * Searches for a page that matches current route
      * Returns true if the page has been found
      *
