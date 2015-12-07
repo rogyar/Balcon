@@ -84,7 +84,7 @@ class Renderer
     {
         $validatedNavigationItems = [];
         foreach ($navigationItems as $navigationItem) {
-            if (isset($navigationItem['name']) && isset($navigationItem['route'])) {
+            if (!empty($navigationItem['name']) && !empty($navigationItem['route'])) {
                 $validatedNavigationItems[] = $navigationItem;
             }
         }
