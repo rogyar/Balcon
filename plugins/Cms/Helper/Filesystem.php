@@ -3,6 +3,7 @@
 namespace Plugins\Cms\Helper;
 
 
+use League\CommonMark\Converter;
 use Plugins\Cms\Model\Block;
 use Plugins\Cms\Model\BlocksCollection;
 

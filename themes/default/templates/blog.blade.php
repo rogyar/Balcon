@@ -11,7 +11,7 @@
                                     {{ $page->getPostInfo($blogpost)['title']}}
                                 </a>
                             </h3>
-                            {{ $page->getExcerpt($blogpost) }}
+                            {!! html_entity_decode($page->getExcerpt($blogpost)) !!}
                         @endforeach
                     </div>
                 </div>

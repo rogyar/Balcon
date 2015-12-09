@@ -3,6 +3,7 @@
 namespace Plugins\Cms\Model;
 
 use \Symfony\Component\Yaml\Yaml;
+use GrahamCampbell\Markdown\Facades\Markdown;
 
 /**
  * Class Mdfile
@@ -41,21 +42,36 @@ class Mdfile
     protected $fileAttrs;
 
     /**
+     * @var Converter
+     */
+    protected $markdownConverter;
+
+    public function __construct()
+    {
+
+    }
+
+    /**
      * @return string
      * @throws \Exception
      */
     public function getContent()
     {
         if (!$this->content) {
-            $blockMdFile = $this->getPath() . '/' . $this->getFileAttrs()['filename'];
-            if (file_exists($blockMdFile)) {
-                $rawContent = file_get_contents($blockMdFile);
-                $this->markdownHeaderParse($rawContent);
-            } else {
-                throw new \Exception("The block in {$this->getPath()} does not have .md file inside");
-            }
+            $rawContent = $this->getRawContent();
+            $this->markdownParse($rawContent);
         }
         return $this->content;
+    }
+
+    public function getRawContent()
+    {
+        $blockMdFile = $this->getPath() . '/' . $this->getFileAttrs()['filename'];
+        if (file_exists($blockMdFile)) {
+            return file_get_contents($blockMdFile);
+        } else {
+            throw new \Exception("The block in {$this->getPath()} does not have .md file inside");
+        }
     }
 
     /**
@@ -119,13 +135,13 @@ class Mdfile
     }
 
     /**
-     * Parses the file by extracting it's header params
-     * and raw content
+     * Parses raw md file contents. Extracts headers
+     * and creates html from contents
      *
      * @param $contents
      * @return $this
      */
-    protected function markdownHeaderParse($contents)
+    protected function markdownParse($contents)
     {
         $frontmatter_regex = "/^---\n(.+?)\n---\n{0,}(.*)$/uis";
 
@@ -137,10 +153,14 @@ class Mdfile
         if(!empty($frontMatterRaw)) {
             $frontmatter = preg_replace("/\n\t/", "\n    ", $frontMatterRaw[1]);
             $this->setParams((array) Yaml::parse($frontmatter));
-            $this->setContent($frontMatterRaw[2]);
+            $this->setContent(
+                Markdown::convertToHtml($frontMatterRaw[2])
+            );
         } else {
             $this->setParams([]);
-            $this->setContent($contents);
+            $this->setContent(
+                Markdown::convertToHtml($contents)
+            );
         }
 
         return $this;

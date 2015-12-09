@@ -10,7 +10,7 @@
                         <div class="post-author">supermen</div>
                     </div>
                     <div class="post-body">
-                        {{ $page->getExcerpt($block) }}
+                        {!! html_entity_decode($block->getBodyForInsertion()) !!}
                     </div>
                 </div>
             </div>
