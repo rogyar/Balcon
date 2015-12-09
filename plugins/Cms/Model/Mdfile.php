@@ -57,7 +57,7 @@ class Mdfile
      */
     public function getContent()
     {
-        if (!$this->content) {
+        if (!isset($this->content)) {
             $rawContent = $this->getRawContent();
             $this->markdownParse($rawContent);
         }
@@ -72,6 +72,7 @@ class Mdfile
         } else {
             throw new \Exception("The block in {$this->getPath()} does not have .md file inside");
         }
+        return $this->content;
     }
 
     /**
@@ -87,7 +88,7 @@ class Mdfile
      */
     public function getParams()
     {
-        if (!$this->params) {
+        if (!isset($this->params)) {
             $this->getContent();
         }
 
