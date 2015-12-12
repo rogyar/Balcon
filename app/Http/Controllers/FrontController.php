@@ -2,15 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\RouteResolverRegisterBefore;
 use App\Resolvers\ResponseResolverInterface;
 use App\Resolvers\RouteResolverInterface;
 use App\User;
 use App\Http\Controllers\Controller;
 use App\Events\RouteResolversRegister;
-use App\Events\EntityResolverRegisterBefore;
 use App\Events\ResponseResolversRegister;
-use App\Events\ResponseResolverRegisterAfter;
+use Illuminate\Support\Facades\Response;
 use Event;
 
 class FrontController extends Controller
@@ -36,7 +34,9 @@ class FrontController extends Controller
             $routeResolver->process($route);
         }
 
-        // TODO: if there's no registered route resolver - process 404 page
+        if (!$balcon->getRouteResolver()) {
+            return Response::view('errors.404', array(), 404);
+        }
 
         /* Register response resolvers from all extensions */
         event(new ResponseResolversRegister($balcon));
