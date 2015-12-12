@@ -4,6 +4,9 @@
 !/pages/.*
 /resources/views/generated/*
 !/resources/views/generated/.*
+!/resources/views/generated/views
+/resources/views/generated/views/*
+!/resources/views/generated/views/.*
 Homestead.yaml
 Homestead.json
 .env
