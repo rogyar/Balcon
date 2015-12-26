@@ -47,10 +47,16 @@
         </div>
         <!-- /.container-fluid -->
     </nav>
+@section('content_before')
+    @parent
+@show
 @section('content')
     @parent
 @endsection
 @yield('content')
+@section('content_after')
+    @parent
+@show
 <footer>
     <div class="col-lg-4 text-center">
         <p>Half of being smart is knowing what you are dumb about &copy;</p>

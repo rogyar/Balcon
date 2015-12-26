@@ -2,6 +2,7 @@
 
 namespace App\Core;
 
+use App\Resolvers\ResponseResolverInterface;
 use App\Resolvers\RouteResolverFactory;
 
 class Balcon implements BalconInterface
@@ -32,6 +33,9 @@ class Balcon implements BalconInterface
         $this->routeResolver = $routeResolver;
     }
 
+    /**
+     * @return ResponseResolverInterface
+     */
     public function getResponseResolver()
     {
         return $this->responseResolver;

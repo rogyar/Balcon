@@ -17,4 +17,5 @@ interface ResponseResolverInterface
      */
     public function setResponse($response);
     public function sendResponse();
+    public function renderResponse();
 }

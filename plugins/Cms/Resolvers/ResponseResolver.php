@@ -32,6 +32,16 @@ class ResponseResolver implements ResponseResolverInterface
      */
     protected $response;
 
+    /**
+     * @var string
+     */
+    protected $rawView;
+
+    /**
+     * @var Renderer
+     */
+    protected $renderer;
+
     public function __construct(BalconInterface $balcon)
     {
         $this->balcon = $balcon;
@@ -62,6 +72,53 @@ class ResponseResolver implements ResponseResolverInterface
     }
 
     /**
+     * @return string
+     */
+    public function getRawView()
+    {
+        return $this->rawView;
+    }
+
+    /**
+     * @param string $rawView
+     */
+    public function setRawView($rawView)
+    {
+        $this->rawView = $rawView;
+    }
+
+    /**
+     * @return Renderer
+     */
+    public function getRenderer()
+    {
+        return $this->renderer;
+    }
+
+    /**
+     * @param Renderer $renderer
+     */
+    public function setRenderer($renderer)
+    {
+        $this->renderer = $renderer;
+    }
+
+
+
+    /**
+     * Renders raw blade template code stored in $rawView
+     * using $renderer as a helper with a set of methods
+     * available inside of the blate template
+     *
+     * @return string
+     */
+    public function renderResponse()
+    {
+        $this->setResponse(view($this->getRawView(), ['page' => $this->getRenderer()])->render());
+        return $this->sendResponse();
+    }
+
+    /**
      * Processes a response for the handled Entity (CMS page by default)
      *
      * @throws \Exception
@@ -75,10 +132,7 @@ class ResponseResolver implements ResponseResolverInterface
 
             /* Register current resolver as response resolver */
             $this->balcon->setResponseResolver($this);
-
-            $this->setResponse(
-                $this->processCmsPage($entity)
-            );
+            $this->processCmsPage($entity);
         }
     }
 
@@ -97,7 +151,6 @@ class ResponseResolver implements ResponseResolverInterface
      * Processes response for the handled CMS page
      *
      * @param Page $page
-     * @return string
      * @throws \Exception
      */
     protected function processCmsPage(Page $page)
@@ -105,12 +158,10 @@ class ResponseResolver implements ResponseResolverInterface
         $dispatchedPage = $page->getDispatchedBlock();
         if ($dispatchedPage) {
             $this->setTemplatesProcessor(new TemplatesProcessor('default.blade.php'));
-            $view = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
-            $renderer = new Renderer($this->templatesProcessor->getResultViewParams());
-            $renderer->setNavigationItems($page->getNavigationItems());
-            $response = view($view, ['page' => $renderer])->render();
+            $this->rawView = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
+            $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams());
+            $this->renderer->setNavigationItems($page->getNavigationItems());
 
-            return $response;
         } else {
             throw new \Exception("No CMS page has been dispatched");
         }

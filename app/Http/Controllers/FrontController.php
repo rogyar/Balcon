@@ -8,6 +8,7 @@ use App\User;
 use App\Http\Controllers\Controller;
 use App\Events\RouteResolversRegister;
 use App\Events\ResponseResolversRegister;
+use App\Events\ResponseRenderBefore;
 use Illuminate\Support\Facades\Response;
 use Event;
 
@@ -48,6 +49,8 @@ class FrontController extends Controller
             $responseResolver->process();
         }
 
-        return $balcon->getResponseResolver()->sendResponse();
+        event(new ResponseRenderBefore($balcon));
+
+        return $balcon->getResponseResolver()->renderResponse();
     }
 }

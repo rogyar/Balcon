@@ -32,10 +32,7 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
         if ($this->requestCanBeHandled($entity)) {
             /* Register current resolver as response resolver */
             $this->balcon->setResponseResolver($this);
-
-            $this->setResponse(
-                $this->processBlogPage($entity)
-            );
+            $this->processBlogPage($entity);
         }
     }
 
@@ -57,16 +54,13 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
             $defaultTemplate = ($pageIsBlogpost)? 'blogpost.blade.php' : 'blog.blade.php';
             $this->setTemplatesProcessor(new TemplatesProcessor($defaultTemplate));
 
-            $view = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
-            $renderer = new Renderer($this->templatesProcessor->getResultViewParams());
+            $this->rawView = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
+            $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams());
             if (!$pageIsBlogpost) {
-                $renderer->collectListOfPosts($page);
+                $this->renderer->collectListOfPosts($page);
             }
 
-            $renderer->setNavigationItems($page->getNavigationItems());
-            $response = view($view, ['page' => $renderer])->render();
-
-            return $response;
+            $this->renderer->setNavigationItems($page->getNavigationItems());
         } else {
             throw new \Exception("No CMS page has been dispatched");
         }
