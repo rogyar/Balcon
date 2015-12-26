@@ -5,7 +5,7 @@
             <div class="row">
                 <div class="col-lg-8 col-lg-offset-2">
                     @if (!$block->getIsParsed())
-                        {{ $block->getBodyForInsertion() }}
+                        {!! html_entity_decode($block->getBodyForInsertion()) !!}
                     @endif
                 </div>
             </div>
