@@ -5,7 +5,7 @@ use \App\Core\PluginInterface;
 
 class Plugin implements PluginInterface
 {
-    protected static $config = [
+    protected $config = [
         'blogRootBlockName' => 'blog'
     ];
 
@@ -43,10 +43,10 @@ class Plugin implements PluginInterface
      * @param $paramName
      * @return string
      */
-    public static function getConfig($paramName)
+    public function getConfigValue($paramName)
     {
-        if (isset(self::$config[$paramName])) {
-            return self::$config[$paramName];
+        if (isset($this->config[$paramName])) {
+            return $this->config[$paramName];
         } else {
             return '';
         }

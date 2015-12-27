@@ -4,6 +4,7 @@ namespace Plugins\Cms\Resolvers;
 
 use App\Core\BalconInterface;
 use App\Core\EntityInterface;
+use App\Core\PluginInterface;
 use App\Resolvers\ResponseResolverInterface;
 use Plugins\Cms\Helper\Renderer;
 use Plugins\Cms\Model\Page;
@@ -42,9 +43,15 @@ class ResponseResolver implements ResponseResolverInterface
      */
     protected $renderer;
 
-    public function __construct(BalconInterface $balcon)
+    /**
+     * @var PluginInterface
+     */
+    protected $pluginConfig;
+
+    public function __construct(BalconInterface $balcon, PluginInterface $plugin)
     {
         $this->balcon = $balcon;
+        $this->pluginConfig = $plugin;
     }
 
     /**
@@ -159,7 +166,7 @@ class ResponseResolver implements ResponseResolverInterface
         if ($dispatchedPage) {
             $this->setTemplatesProcessor(new TemplatesProcessor('default.blade.php'));
             $this->rawView = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
-            $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams());
+            $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams(), $this->getPluginConfig());
             $this->renderer->setNavigationItems($page->getNavigationItems());
 
         } else {
@@ -181,5 +188,13 @@ class ResponseResolver implements ResponseResolverInterface
     public function setTemplatesProcessor(TemplatesProcessor $templatesProcessor)
     {
         $this->templatesProcessor = $templatesProcessor;
+    }
+
+    /**
+     * @return PluginInterface
+     */
+    public function getPluginConfig()
+    {
+        return $this->pluginConfig;
     }
 }

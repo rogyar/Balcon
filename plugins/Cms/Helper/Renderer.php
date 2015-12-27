@@ -2,6 +2,8 @@
 
 namespace Plugins\Cms\Helper;
 
+use App\Core\PluginInterface;
+
 /**
  * Class Renderer
  * @package Plugins\Cms\Helper
@@ -9,20 +11,24 @@ namespace Plugins\Cms\Helper;
  * Contains methods for rendering different components
  * methods allowed directly from the blade template
  */
+
 class Renderer
 {
     /** @var  array */
     protected $pageParameters;
     /** @var  array */
     protected $navigationItems;
+    /** @var  PluginInterface */
+    protected $plugin;
 
     /**
      * Renderer constructor.
      * @param $pageParams
      */
-    public function __construct($pageParams)
+    public function __construct($pageParams, PluginInterface $plugin)
     {
         $this->pageParameters = $pageParams;
+        $this->plugin = $plugin;
     }
 
     /**

@@ -39,7 +39,8 @@ class Renderer extends \Plugins\Cms\Helper\Renderer
     public function collectListOfPosts(Page $post)
     {
         $pagesCollection = $post->getBlocksCollection();
-        $blogPostsCollection = $pagesCollection->getBlock(Plugin::getConfig('blogRootBlockName'))
+        $blogRootBlockName = $this->plugin->getConfigValue('blogRootBlockName');
+        $blogPostsCollection = $pagesCollection->getBlock($blogRootBlockName)
             ->getChildren();
         $this->listOfPosts = $this->sortPosts($blogPostsCollection);
     }

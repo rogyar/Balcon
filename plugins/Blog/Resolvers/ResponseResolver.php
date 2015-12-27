@@ -55,7 +55,7 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
             $this->setTemplatesProcessor(new TemplatesProcessor($defaultTemplate));
 
             $this->rawView = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
-            $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams());
+            $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams(), $this->getPluginConfig());
             if (!$pageIsBlogpost) {
                 $this->renderer->collectListOfPosts($page);
             }
@@ -71,7 +71,7 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
      */
     protected function requestCanBeHandled(EntityInterface $entity)
     {
-        $blogRoute = Plugin::getConfig('blogRootBlockName');
+        $blogRoute = $this->pluginConfig->getConfigValue('blogRootBlockName');
         if ($entity instanceof Page && (preg_match("/^($blogRoute)(\/|\$)/", $entity->getRoute()))) {
             return parent::requestCanBeHandled($entity);
         } else {

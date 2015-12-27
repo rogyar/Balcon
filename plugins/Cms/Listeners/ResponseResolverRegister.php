@@ -3,6 +3,7 @@
 namespace Plugins\Cms\Listeners;
 
 use App\Events\ResponseResolversRegister;
+use Plugins\Cms\Config\Plugin;
 use Plugins\Cms\Resolvers\ResponseResolver;
 
 class ResponseResolverRegister
@@ -11,6 +12,6 @@ class ResponseResolverRegister
     {
         /** @var \App\Core\Balcon $balcon */
         $balcon = $event->getContext();
-        $balcon->getExtensionsContainer()->addResponseResolver(new ResponseResolver($balcon));
+        $balcon->getExtensionsContainer()->addResponseResolver(new ResponseResolver($balcon, new Plugin()));
     }
 }
