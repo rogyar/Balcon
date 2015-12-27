@@ -36,6 +36,12 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
         }
     }
 
+    public function checkPageIsBlogPost(Page $page)
+    {
+        // TODO: implement as a separate routine that has a list of routes for listofposts page
+        return (count(explode('/', $page->getRoute())) > 1);
+    }
+
     /**
      * Processes response for the handled Blog page
      *
@@ -47,10 +53,8 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
     {
         $dispatchedPage = $page->getDispatchedBlock();
         if ($dispatchedPage) {
-
             /* Check the route to identify the blog page type index or post */
-            // TODO: implement as a separate routine that has a list of routes for listofposts page
-            $pageIsBlogpost = (count(explode('/', $page->getRoute())) > 1);
+            $pageIsBlogpost = $this->checkPageIsBlogPost($page);
             $defaultTemplate = ($pageIsBlogpost)? 'blogpost.blade.php' : 'blog.blade.php';
             $this->setTemplatesProcessor(new TemplatesProcessor($defaultTemplate));
 

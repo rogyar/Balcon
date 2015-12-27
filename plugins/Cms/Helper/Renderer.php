@@ -40,6 +40,14 @@ class Renderer
     }
 
     /**
+     * @param array $pageParameters
+     */
+    public function setPageParameters($pageParameters)
+    {
+        $this->pageParameters = $pageParameters;
+    }
+
+    /**
      * @return array
      */
     public function getNavigationItems()

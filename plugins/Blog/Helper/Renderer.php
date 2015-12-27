@@ -100,7 +100,6 @@ class Renderer extends \Plugins\Cms\Helper\Renderer
             $postsCollection->setBlocks($sortedBlocks);
         }
 
-
         return $postsCollection;
     }
 }

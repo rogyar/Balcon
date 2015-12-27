@@ -54,6 +54,7 @@ class ResponseResolver implements ResponseResolverInterface
         $this->pluginConfig = $plugin;
     }
 
+
     /**
      * @return string
      */

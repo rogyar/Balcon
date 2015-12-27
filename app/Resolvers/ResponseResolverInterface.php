@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Resolvers;
+use App\Core\PluginInterface;
 
 interface ResponseResolverInterface
 {
@@ -18,4 +19,9 @@ interface ResponseResolverInterface
     public function setResponse($response);
     public function sendResponse();
     public function renderResponse();
+
+    /**
+     * @return PluginInterface
+     */
+    public function getPluginConfig();
 }
