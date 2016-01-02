@@ -1,10 +1,10 @@
 <?php
 
-namespace Plugins\Cms\Listeners;
+namespace Plugins\Disqus\Listeners;
 
 use App\Events\ResponseRenderBefore;
 use Plugins\Blog\Resolvers\ResponseResolver;
-use Plugins\Cms\Resolvers\RouteResolver;
+use Plugins\Disqus\Helper\DisqusInjector;
 
 class ResponseRenderedBefore
 {
@@ -19,7 +19,8 @@ class ResponseRenderedBefore
         if ($responseResolver->getPluginConfig()->getName() == 'Blog') {
             $page = $balcon->getRouteResolver()->getEntity();
             if ($responseResolver->checkPageIsBlogPost($page)) {
-                // TODO: do the job here
+                $disqusInjetor = new DisqusInjector($responseResolver, $page);
+                $disqusInjetor->injectDisqusComments();
             }
         }
     }

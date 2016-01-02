@@ -21,6 +21,30 @@ class DisqusInjector
         $this->page = $page;
     }
 
+    /**
+     * Returns current disqus template path
+     *
+     * @return string
+     */
+    public function getCommentsTemplatePath()
+    {
+        // TODO: get from config
+        $templatesProcessor = $this->responseResolver->getTemplatesProcessor();
+        $templatePath = $templatesProcessor->getThemesDir() . $templatesProcessor->getCurrentTheme() .
+            '/components/plugins/disqus/comments.blade.php';
+        if (!file_exists($templatePath)) {
+            $templatePath = $templatesProcessor->getThemesDir() . $templatesProcessor->getFallbackTheme() .
+                '/components/plugins/disqus/comments.blade.php';
+        }
+
+        return (file_exists($templatePath)? $templatePath : '' );
+    }
+
+    /**
+     * Inserts disqus code into the page
+     *
+     * @throws \Exception
+     */
     public function injectDisqusComments()
     {
         /* Add additional necessary page parameters */
@@ -33,5 +57,18 @@ class DisqusInjector
         $this->responseResolver->getRenderer()->setPageParameters(
             array_merge($existingParameters, $disqusParams)
         );
+
+        /* Inject comments template */
+        $templateFile = $this->getCommentsTemplatePath();
+        // TODO: do not write contents once again if comments code has been already injected
+        if (!empty($templateFile)) {
+            $templatesProcessor = $this->responseResolver->getTemplatesProcessor();
+            $rawPageContents = $templatesProcessor->getContent();
+            $commentsContents = file_get_contents($templateFile);
+            $templatesProcessor->setContent($rawPageContents . $commentsContents);
+            $templatesProcessor->generateResultViewFile($this->page->getDispatchedBlock());
+        } else {
+            // TODO: log error that the template does not exist
+        }
     }
 }

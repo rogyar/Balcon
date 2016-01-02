@@ -36,7 +36,7 @@ class ResponseResolver implements ResponseResolverInterface
     /**
      * @var string
      */
-    protected $rawView;
+    protected $rawViewPath;
 
     /**
      * @var Renderer
@@ -82,17 +82,17 @@ class ResponseResolver implements ResponseResolverInterface
     /**
      * @return string
      */
-    public function getRawView()
+    public function getRawViewPath()
     {
-        return $this->rawView;
+        return $this->rawViewPath;
     }
 
     /**
-     * @param string $rawView
+     * @param string $rawViewPath
      */
-    public function setRawView($rawView)
+    public function setRawViewPath($rawViewPath)
     {
-        $this->rawView = $rawView;
+        $this->rawViewPath = $rawViewPath;
     }
 
     /**
@@ -122,7 +122,7 @@ class ResponseResolver implements ResponseResolverInterface
      */
     public function renderResponse()
     {
-        $this->setResponse(view($this->getRawView(), ['page' => $this->getRenderer()])->render());
+        $this->setResponse(view($this->getRawViewPath(), ['page' => $this->getRenderer()])->render());
         return $this->sendResponse();
     }
 
@@ -166,7 +166,7 @@ class ResponseResolver implements ResponseResolverInterface
         $dispatchedPage = $page->getDispatchedBlock();
         if ($dispatchedPage) {
             $this->setTemplatesProcessor(new TemplatesProcessor('default.blade.php'));
-            $this->rawView = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
+            $this->rawViewPath = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
             $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams(), $this->getPluginConfig());
             $this->renderer->setNavigationItems($page->getNavigationItems());
 

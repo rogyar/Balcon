@@ -58,7 +58,7 @@ class ResponseResolver extends \Plugins\Cms\Resolvers\ResponseResolver
             $defaultTemplate = ($pageIsBlogpost)? 'blogpost.blade.php' : 'blog.blade.php';
             $this->setTemplatesProcessor(new TemplatesProcessor($defaultTemplate));
 
-            $this->rawView = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
+            $this->rawViewPath = $this->templatesProcessor->applyPageBlocksTemplates($dispatchedPage);
             $this->renderer = new Renderer($this->templatesProcessor->getResultViewParams(), $this->getPluginConfig());
             if (!$pageIsBlogpost) {
                 $this->renderer->collectListOfPosts($page);

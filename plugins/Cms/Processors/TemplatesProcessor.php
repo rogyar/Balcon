@@ -292,7 +292,7 @@ class TemplatesProcessor
      * @return string
      * @throws \Exception
      */
-    protected function generateResultViewFile(Block $block)
+    public function generateResultViewFile(Block $block)
     {
         $filePath = $this->getGeneratedViewsDir() . $block->getRoute() . '.blade.php';
         $fileDirPath = dirname($filePath);
