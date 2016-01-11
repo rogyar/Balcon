@@ -192,6 +192,7 @@ class TemplatesProcessor
                 $this->addBlockToTheResultViewParamsSet($childBlock);
             }
         }
+        // FIXME : for some reason blog child posts are empty
         /* Add root block custom params to the parameters set */
         $this->resultViewParams['customParams'] = $block->getParams();
         $this->setResultView('generated/views' . $block->getRoute());

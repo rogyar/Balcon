@@ -11,7 +11,7 @@ namespace Plugins\Cms\Model;
 class BlocksCollection
 {
     /** @var  array */
-    protected $blocks;
+    protected $blocks = [];
 
     /**
      * @return array
