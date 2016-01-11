@@ -180,15 +180,20 @@ class TemplatesProcessor
      */
     public function applyPageBlocksTemplates(Block $block)
     {
-        $this->processBlockTemplate($block); // Process root block
+        if (!$this->checkViewAlreadyGenerated($block)) { // Do not process if layout has been already generated
+            $this->processBlockTemplate($block); // Process root block
 
+            $this->applyChildBlocksTemplates($block); // Process child blocks
+            $this->generateResultViewFile($block);
+        } else { // If layout has been generated - just add block parameters for further rendering
+            $this->addBlockToTheResultViewParamsSet($block);
+            $childBlocksCollection = $block->getChildren();
+            foreach ($childBlocksCollection->getBlocks() as $childBlock) {
+                $this->addBlockToTheResultViewParamsSet($childBlock);
+            }
+        }
         /* Add root block custom params to the parameters set */
         $this->resultViewParams['customParams'] = $block->getParams();
-
-        $this->applyChildBlocksTemplates($block); // Process child blocks
-        $this->generateResultViewFile($block);
-
-        // TODO: get from config
         $this->setResultView('generated/views' . $block->getRoute());
 
         return $this->getResultView();
@@ -219,6 +224,11 @@ class TemplatesProcessor
         );
 
         $this->content .= $templateFileRawContents . "\n";
+    }
+
+    protected function checkViewAlreadyGenerated(Block $block)
+    {
+        return file_exists($this->getGeneratedViewsDir() . $block->getRoute() . '.blade.php');
     }
 
     /**

@@ -49,7 +49,7 @@ class DisqusInjector
     {
         /* Add additional necessary page parameters */
         $disqusParams = [
-            'pageUrl' => $this->page->getRoute(),
+            'pageUrl' => $this->page->getRoute(), // FIXME: get an actual url
             'pageId' => $this->page->getRoute(),
         ];
 
@@ -60,15 +60,30 @@ class DisqusInjector
 
         /* Inject comments template */
         $templateFile = $this->getCommentsTemplatePath();
-        // TODO: do not write contents once again if comments code has been already injected
         if (!empty($templateFile)) {
             $templatesProcessor = $this->responseResolver->getTemplatesProcessor();
             $rawPageContents = $templatesProcessor->getContent();
-            $commentsContents = file_get_contents($templateFile);
-            $templatesProcessor->setContent($rawPageContents . $commentsContents);
-            $templatesProcessor->generateResultViewFile($this->page->getDispatchedBlock());
+            if (!$this->contentsContainsCommentsSection($rawPageContents)) {
+                $commentsContents = file_get_contents($templateFile);
+                $templatesProcessor->setContent($rawPageContents . $commentsContents);
+                $templatesProcessor->generateResultViewFile($this->page->getDispatchedBlock());
+            }
         } else {
             // TODO: log error that the template does not exist
         }
+    }
+
+    /**
+     * Checks if disqus comments section has been already injected
+     * into the generated file
+     *
+     * @param string $rawPageContents
+     * @return string
+     */
+    protected function contentsContainsCommentsSection($rawPageContents)
+    {
+        $discussSectionId = '<div id="disqus_thread"></div>'; //TODO: get from config
+
+        return strstr($rawPageContents, $discussSectionId);
     }
 }
